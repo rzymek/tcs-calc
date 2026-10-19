@@ -1,57 +1,20 @@
 import {State} from "./state.ts";
-import {UnitDef, UnitStats, unitStats} from "./unitName.tsx";
-import * as R from "remeda";
-import {isNumber} from "remeda";
+import {unitStats} from "./unitName.tsx";
 import {countSteps} from "./countSteps.tsx";
 import {infFirepower} from "./infFirepower.tsx";
 import {areaTargetStacking} from "./areaTargetStacking.tsx";
-
-const spottingTable = {
-  area: 3,
-  both: 3,
-  at: 4,
-  arty: 4,
-  aa: 4,
-  ig: 4,
-  point: 8,
-} as const;
-
-function unitSpottingRange(def: UnitDef): number {
-  const unit = unitStats(def);
-  return R.pipe([
-      spottingTable[unit.type as keyof typeof spottingTable],
-      spottingTable[unit.targetType as keyof typeof spottingTable],
-    ],
-    R.filter(isNumber),
-    R.maxBy(R.identity)
-  ) ?? Infinity;
-}
-
-function unitsSpottingRange(units: UnitDef[]): number {
-  return R.pipe(units,
-    R.map(unitSpottingRange),
-    R.maxBy(R.identity)
-  ) ?? Infinity;
-}
-
-function isAreaTarget(units: UnitDef[]) {
-  const areaTargets: UnitStats['targetType'][] = ['area', 'both'];
-  return units
-    .map(unitStats)
-    .some(unit => areaTargets.includes(unit.targetType));
-}
+import {unitsSpottingRange} from "./unitsSpottingRange.tsx";
+import {areaFireRange} from "./areaFireRange.tsx";
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
   const spotted = state.distance <= spottingRange;
 
-  const aTarget = isAreaTarget(state.defender.units);
-
   return {
     infFirepower: infFirepower(state),
     areaTargetStacking: areaTargetStacking(state, spotted),
+    areaFireRange: areaFireRange(state),
     spottingRange,
-    aTarget,
     firerInfSteps: countSteps({
       ...state.attacker,
       units: state.attacker.units.filter(unit => unitStats(unit).type === 'inf'),
