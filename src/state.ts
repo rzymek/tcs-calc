@@ -1,4 +1,5 @@
 import {range} from "remeda";
+import {Terrain} from "./terrainFromImgName.tsx";
 
 export function firepowerDef(index: number) {
   return {
@@ -82,7 +83,7 @@ export type TPickMany = typeof pickManyDefs;
 export type SingleSelectionFields = keyof TPickOne;
 export type MultipleSelectionFields = keyof TPickMany;
 
-type SideState = {
+export type SideState = {
   units: string[],
   stepLosses: string[],
   mods: string[],
@@ -94,9 +95,10 @@ export type State = {
 } & {
   firepower: (number | undefined)[],
   // app2:
+  attackingSide: 'Britain' | 'Argentine',
   attacker: SideState,
   defender: SideState,
-  terrain: string,
+  terrain: Terrain,
   distance: number,
 };
 
@@ -105,16 +107,20 @@ export const initialState: State = {
   firererEnv: [],
   targetEnv: [],
   //app2
+  attackingSide: 'Britain',
   attacker: {
     units: [],
     stepLosses: [],
     mods: []
   },
-  defender:{
+  defender: {
     units: [],
     stepLosses: [],
     mods: []
   },
-  terrain: 'clean_open',
+  terrain: {
+    name: 'Clean',
+    type: 'clean_open',
+  },
   distance: 1,
 }

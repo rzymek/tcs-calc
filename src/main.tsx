@@ -1,8 +1,12 @@
 import {render} from 'preact'
-import {App} from './app.tsx'
 import './index.css'
-import {App2} from "./app2.tsx";
+import {StateContext} from "./StateContext.tsx";
+import {MainLayout} from "./mainLayout.tsx";
 
-render(<App2 />, document.getElementById('app')!)
+render(<App2/>, document.getElementById('app')!)
 
-
+function App2() {
+  return <StateContext>
+    <MainLayout/>
+  </StateContext>
+}
