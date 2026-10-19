@@ -2,6 +2,8 @@ import {CSSProperties, useState} from "preact/compat";
 import "./app.css";
 import * as R from "remeda";
 
+const size = 12; // mm
+
 const cell: CSSProperties = {
   border: '1px solid black',
   overflow: 'auto',
@@ -31,17 +33,18 @@ export function App2() {
     inset: 0,
     display: 'grid',
     gridTemplateColumns: `1fr 1fr`,
-    gridTemplateRows: `1fr 12mm 10mm 10mm 1fr 2cm 12mm`,
+    gridTemplateRows: `1fr ${2 * (size + 2)}mm ${size}mm ${size}mm 1fr ${2 * size}mm ${size + 2}mm`,
   }}>
     <div style={{...cell, background: britColor}}>
-      {resolveAll(brit).map(img => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+      {resolveAll(brit).map(img => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
                                         onClick={() => setBritSelected(prev => [...prev, img])}/>)}
     </div>
     <div style={{...cell, background: argColor}}>
-      {resolveAll(arg).map(img => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+      {resolveAll(arg).map(img => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
                                        onClick={() => setArgSelected(prev => [...prev, img])}/>)}
     </div>
-    <div style={{...wide, display: 'grid', gridTemplateColumns: `${2 * 12}mm 1fr`, overflow: 'hidden'}}>
+
+    <div style={{...wide, display: 'grid', gridTemplateColumns: `${(size + 2)}mm 1fr`, overflow: 'hidden'}}>
       <div style={{background: 'lightblue', overflow: 'auto'}}>
         <ModToggles selected={attackerMods} setSelected={setAttackerMods} mods={[
           {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
@@ -80,17 +83,28 @@ export function App2() {
     </div>
     <div style={{...wide,}}>
       {R.range(0, 30 + 1).map(it => <button style={{
-        width: '10mm',
-        minWidth: '10mm',
+        width: `${size}mm`,
+        minWidth: `${size}mm`,
         ...(distance === it && {background: 'rgb(0,0,255,0.5)', color: 'white'}),
       }} onClick={() => setDistance(it)}>{it}</button>)}
     </div>
-    <div style={{...cell, background: britColor}}>
-      {britSelected.map((img, idx) => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+    <button style={{
+      gridArea: '5 / 1 / 6 / 3',
+      alignSelf: 'end',
+      justifySelf: 'center',
+      marginBottom: '2mm',
+      zIndex: 1,
+      width: `${size}mm`,
+      height: `${size}mm`
+    }}>
+      🔄
+    </button>
+    <div style={{...cell, background: britColor, gridArea: '5 / 1'}}>
+      {britSelected.map((img, idx) => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
                                            onClick={() => setBritSelected(prev => prev.filter((_, i) => i !== idx))}/>)}
     </div>
-    <div style={{...cell, background: argColor}}>
-      {argSelected.map((img, idx) => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+    <div style={{...cell, background: argColor, gridArea: '5 / 2'}}>
+      {argSelected.map((img, idx) => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
                                           onClick={() => setArgSelected(prev => prev.filter((_, i) => i !== idx))}/>)}
     </div>
     <div style={wide}/>
@@ -127,7 +141,7 @@ function ModToggles({mods, selected, setSelected}: {
       const {mod, src} = active ?? first;
       return <div style={{position: 'relative', display: 'inline-block', cursor: 'pointer'}}
                   onClick={() => toggle(first)}>
-        <img src={src} style={{width: '1cm', display: 'block'}} alt={mod}/>
+        <img src={src} style={{width: `${size}mm`, display: 'block'}} alt={mod}/>
         {active && <div style={{
           position: 'absolute',
           inset: 0,
