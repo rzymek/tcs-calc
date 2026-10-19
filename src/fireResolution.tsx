@@ -5,6 +5,7 @@ import {infFirepower} from "./infFirepower.tsx";
 import {areaTargetStacking} from "./areaTargetStacking.tsx";
 import {unitsSpottingRange} from "./unitsSpottingRange.tsx";
 import {areaFireRange} from "./areaFireRange.tsx";
+import {targetTerrainPosture} from "./targetTerrainPosture.tsx";
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
@@ -14,6 +15,7 @@ export function fireResolution(state: State) {
     infFirepower: infFirepower(state),
     areaTargetStacking: areaTargetStacking(state, spotted),
     areaFireRange: areaFireRange(state.attacker, state.distance),
+    targetTerrainPosture: targetTerrainPosture(state.defender, state.terrain),
     spottingRange,
     firerInfSteps: countSteps({
       ...state.attacker,
