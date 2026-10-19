@@ -22,14 +22,12 @@ declare module 'virtual:static-assets' {
     "arty/GG-F_212.png" |
     "arty/GG-F_89.png" |
     "markers/GG-B_222.png" |
-    "markers/GG-B_263.png" |
     "markers/GG-B_286.png" |
     "markers/GG-B_287 - Copy.png" |
     "markers/GG-B_347.png" |
     "markers/GG-B_389.png" |
     "markers/GG-B_410.png" |
     "markers/GG-B_411.png" |
-    "markers/GG-F_254.png" |
     "markers/GG-F_279.png" |
     "markers/GG-F_280.png" |
     "markers/GG-F_339.png" |
@@ -37,6 +35,8 @@ declare module 'virtual:static-assets' {
     "markers/GG-F_408.png" |
     "markers/arty.png" |
     "markers/dugin.png" |
+    "markers/fired.png" |
+    "markers/firing.png" |
     "markers/illum.png" |
     "markers/impulse-1.png" |
     "markers/impulse-2.png" |
@@ -44,6 +44,7 @@ declare module 'virtual:static-assets' {
     "markers/misc_steploss-2.png" |
     "markers/misc_steploss-3.png" |
     "markers/misc_steploss-4.png" |
+    "markers/moving.svg" |
     "markers/night.svg" |
     "markers/paralyzed.png" |
     "markers/road-moving.png" |

@@ -62,6 +62,8 @@ export function App2() {
           {mod: 'dugin', src: import.meta.resolve('./images/markers/dugin.png')},
           {mod: 'unassigned', src: import.meta.resolve('./images/markers/unassigned.svg')},
           {mod: 'road-moving', src: import.meta.resolve('./images/markers/road-moving.png')},
+          {mod: 'firing', src: import.meta.resolve('./images/markers/firing.png')},
+          {mod: 'moving', src: import.meta.resolve('./images/markers/moving.svg')},
         ]}/>
       </div>
     </div>
