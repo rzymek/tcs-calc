@@ -16,14 +16,15 @@ describe('unitName', () => {
 
 describe('unitStats', () => {
   it('Spt-2', () => {
-    expect(unitStats(UnitDef.brand('14y.9b.0b.2'))).toEqual({
+    expect(unitStats(UnitDef.brand('14y.9b.0b.2.mg'))).toEqual({
       firerType: 'point',
       fireStrength: 14,
       range: 9,
       targetType: 'both',
       steps: 2,
       defenseStrength: 0,
-      trajectory: 'low'
+      trajectory: 'low',
+      type: 'mg',
     } satisfies UnitStats)
   })
   it('12-D-2', () => {
@@ -34,7 +35,8 @@ describe('unitStats', () => {
       trajectory: 'low',
       targetType: 'area',
       steps: 5,
-      morale: 1
+      morale: 1,
+      type: 'inf',
     } satisfies UnitStats)
   })
   it('A-GAA 4', () => {

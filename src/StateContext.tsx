@@ -13,7 +13,7 @@ export function StateContext({children, transition}: PropsWithChildren<{ transit
           ...prev,
           ...v
         };
-        console.log(next)
+        // console.log(next)
         return transition ? transition(prev, next) : next;
       })
     }, [transition])

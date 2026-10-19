@@ -3,6 +3,8 @@ import {UnitDef, UnitStats, unitStats} from "./unitName.tsx";
 import * as R from "remeda";
 import {isNumber} from "remeda";
 import {countSteps} from "./countSteps.tsx";
+import {infFirepower} from "./infFirepower.tsx";
+import {areaTargetStacking} from "./areaTargetStacking.tsx";
 
 const spottingTable = {
   area: 3,
@@ -25,7 +27,7 @@ function unitSpottingRange(def: UnitDef): number {
   ) ?? Infinity;
 }
 
-function unitsSpottingRange(units:UnitDef[]): number {
+function unitsSpottingRange(units: UnitDef[]): number {
   return R.pipe(units,
     R.map(unitSpottingRange),
     R.maxBy(R.identity)
@@ -41,11 +43,20 @@ function isAreaTarget(units: UnitDef[]) {
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
+  const spotted = state.distance <= spottingRange;
+
   const aTarget = isAreaTarget(state.defender.units);
+
   return {
+    infFirepower: infFirepower(state),
+    areaTargetStacking: areaTargetStacking(state, spotted),
     spottingRange,
     aTarget,
-    firerSteps: countSteps(state.attacker),
-    spotted: state.distance <= spottingRange,
+    firerInfSteps: countSteps({
+      ...state.attacker,
+      units: state.attacker.units.filter(unit => unitStats(unit).type === 'inf'),
+    }),
+    targetSteps: countSteps(state.defender),
+    spotted,
   }
 }

@@ -3,7 +3,7 @@ import {countSteps} from "./countSteps.tsx";
 import {UnitDef} from "./unitName.tsx";
 
 describe("countSteps", () => {
-  it('should', () => {
+  it('should add unit steps and subtract loses', () => {
     expect(countSteps({
       units: [
         '4w.40w.2w.2',

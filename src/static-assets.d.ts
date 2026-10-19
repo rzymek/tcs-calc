@@ -139,12 +139,12 @@ declare module 'virtual:static-assets' {
     "units/Arg/26_6w.53w.6w.1.mrt.png" |
     "units/Brit/00_7w.5b.1w.png" |
     "units/Brit/01_2w.5b.2w.png" |
-    "units/Brit/02_2w.7b.1w.2.png" |
+    "units/Brit/02_2w.7b.1w.2.mg.png" |
     "units/Brit/03_1w.2b.1w.1.png" |
-    "units/Brit/04_4w.40w.2w.2.png" |
-    "units/Brit/08_1w.2b.2w.1.png" |
+    "units/Brit/04_4w.40w.2w.2.mrt.png" |
+    "units/Brit/08_1w.2b.2w.1.wt.png" |
     "units/Brit/10_5w.5b.2w.png" |
-    "units/Brit/90_1y.7b.2y.1.png" |
+    "units/Brit/90_1y.7b.2y.1.vehicle.png" |
     "units/Brit/95_14y.9b.0b.2.milan.png" |
     "vassal/1d6_button16.png" |
     "vassal/2d626.png" |

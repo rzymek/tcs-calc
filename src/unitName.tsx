@@ -18,7 +18,7 @@ export type UnitStats = {
   range: number;
   steps: number;
   trajectory: 'high' | 'low',
-  type?: string,
+  type: string,
 } & ({
   targetType: 'area',
   morale: number
@@ -45,7 +45,7 @@ export class UnitDefColorError extends Error {
 export function unitStats(unit: UnitDef): UnitStats {
   const isTag = (part: string) => /^[a-z]{2,}$/.test(part);
   const parts = UnitDef.unbrand(unit).split('.');
-  const type = parts.find(isTag);
+  const type = parts.find(isTag) ?? 'inf';
   const [fire, range, defence, steps] = parts.filter(part => !isTag(part)).map(part => {
     const [, value, color] = part.match(/^(\d+)([wby]?)$/) || panic(new UnitDefError(unit));
     return {value: Number(value), color};
