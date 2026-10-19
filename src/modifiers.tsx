@@ -16,6 +16,7 @@ const defenderModifiers = [
   {mod: 'road-moving', src: import.meta.resolve('./images/markers/road-moving.png')},
   {mod: 'firing', src: import.meta.resolve('./images/markers/firing.png')},
   {mod: 'moving', src: import.meta.resolve('./images/markers/moving.svg')},
+  {mod: 'crossfire', src: import.meta.resolve('./images/markers/crossfire.png')},
 ] as const;
 
 const attackerModifiers = [

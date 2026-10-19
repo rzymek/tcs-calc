@@ -6,6 +6,7 @@ import {areaTargetStacking, includesLowTrajectory} from "./areaTargetStacking.ts
 import {unitsSpottingRange} from "./unitsSpottingRange.tsx";
 import {areaFireRange} from "./areaFireRange.tsx";
 import {targetTerrainPosture} from "./targetTerrainPosture.tsx";
+import {otherModifiers} from "./otherModifiers.tsx";
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
@@ -19,6 +20,7 @@ export function fireResolution(state: State) {
       spotted: spotted,
       includesLowTrajectory: includesLowTrajectory(state)
     }),
+    otherModifiers: otherModifiers(state.attacker, state.defender, state.distance),
     spottingRange,
     firerInfSteps: countSteps({
       ...state.attacker,

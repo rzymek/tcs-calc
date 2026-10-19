@@ -29,7 +29,7 @@ export function MainLayout() {
       ${2 * (size + 2)}mm 
       ${size}mm 
       ${size}mm 
-      2fr 
+      1fr 
       1fr
     `,
   }}>

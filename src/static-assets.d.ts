@@ -22,6 +22,7 @@ declare module 'virtual:static-assets' {
     "arty/GG-F_212.png" |
     "arty/GG-F_89.png" |
     "markers/arty.png" |
+    "markers/crossfire.png" |
     "markers/dugin.png" |
     "markers/fired.png" |
     "markers/firing.png" |
