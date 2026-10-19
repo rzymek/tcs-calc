@@ -24,14 +24,10 @@ declare module 'virtual:static-assets' {
     "markers/GG-B_222.png" |
     "markers/GG-B_286.png" |
     "markers/GG-B_287 - Copy.png" |
-    "markers/GG-B_347.png" |
-    "markers/GG-B_389.png" |
     "markers/GG-B_410.png" |
     "markers/GG-B_411.png" |
     "markers/GG-F_279.png" |
     "markers/GG-F_280.png" |
-    "markers/GG-F_339.png" |
-    "markers/GG-F_386.png" |
     "markers/GG-F_408.png" |
     "markers/arty.png" |
     "markers/dugin.png" |
@@ -51,6 +47,7 @@ declare module 'virtual:static-assets' {
     "markers/smoke.png" |
     "markers/suppressed.png" |
     "markers/target-hex.png" |
+    "markers/twilight.svg" |
     "markers/unassigned.svg" |
     "move/GG-B_100.png" |
     "move/GG-B_101.png" |
@@ -114,6 +111,10 @@ declare module 'virtual:static-assets' {
     "move/GG-B_81.png" |
     "move/GG-B_82.png" |
     "move/GG-B_83.png" |
+    "steps/1.png" |
+    "steps/2.png" |
+    "steps/3.png" |
+    "steps/4.png" |
     "terrain/01_clean-open.png" |
     "terrain/02_gorse line-partly pro.png" |
     "terrain/03_buildings-partly pro.png" |
@@ -149,10 +150,8 @@ declare module 'virtual:static-assets' {
     "vassal/2d626.png" |
     "vassal/Argi-Morale-Box.png" |
     "vassal/Brit-Morale-Box.png" |
-    "vassal/GG-MAP.png" |
     "vassal/GG-Reinfs.png" |
     "vassal/GG-Turn-Track.png" |
-    "vassal/Goose-Green-Op-Map.png" |
     "vassal/Moved-Marker-3.png" |
     "vassal/TCS4Tables_FINAL-copy-1.png" |
     "vassal/TCS4Tables_FINAL-copy-2.png" |
@@ -183,6 +182,7 @@ declare module 'virtual:static-assets' {
     "arty/" |
     "markers/" |
     "move/" |
+    "steps/" |
     "terrain/" |
     "units/" |
     "units/Arg/" |

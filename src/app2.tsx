@@ -15,6 +15,7 @@ const cell: CSSProperties = {
 const wide: CSSProperties = {...cell, gridColumn: 'span 2', flexWrap: 'nowrap', overflowY: 'hidden'};
 
 const brit = import.meta.glob<string>(`./images/units/Brit/*.png`);
+const steps = import.meta.glob<string>(`./images//steps/*.png`);
 const arg = import.meta.glob<string>(`./images/units/Arg/*.png`);
 const terrain = import.meta.glob<string>(`./images/terrain/*.png`);
 const britColor = 'lightblue';
@@ -34,7 +35,17 @@ export function App2() {
     inset: 0,
     display: 'grid',
     gridTemplateColumns: `1fr 1fr`,
-    gridTemplateRows: `1fr ${2 * (size + 2)}mm ${size}mm ${size}mm 1fr ${2 * size}mm ${size + 2}mm`,
+    gridTemplateRows: `
+      2fr 
+      ${size+2}mm 
+      ${2 * (size + 2)}mm 
+      ${size}mm 
+      2fr 
+      ${size}mm 
+      ${size}mm 
+      ${2 * size}mm 
+      ${size + 2}mm
+    `,
   }}>
     <div style={{...cell, background: britColor}}>
       {resolveAll(brit).map(img => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
@@ -44,17 +55,28 @@ export function App2() {
       {resolveAll(arg).map(img => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
                                        onClick={() => setArgSelected(prev => [...prev, img])}/>)}
     </div>
+    <div style={{...cell, background: britColor}}>
+      {resolveAll(steps).map(img => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
+                                        onClick={() => setBritSelected(prev => [...prev, img])}/>)}
+    </div>
+    <div style={{...cell, background: argColor}}>
+      {resolveAll(steps).map(img => <img src={img} style={{width: `${size}mm`, cursor: 'pointer'}} alt={img}
+                                       onClick={() => setArgSelected(prev => [...prev, img])}/>)}
+    </div>
 
-    <div style={{...wide, display: 'grid', gridTemplateColumns: `${(size + 2)}mm 1fr`, overflow: 'hidden'}}>
+    <div style={{...wide, display: 'grid', gridTemplateColumns: `${2*(size + 2)}mm 1fr`, overflow: 'hidden'}}>
       <div style={{background: 'lightblue', overflow: 'auto'}}>
         <ModToggles selected={attackerMods} setSelected={setAttackerMods} mods={[
           {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
           {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
+          {mod: 'dugin', src: import.meta.resolve('./images/markers/dugin.png')},
+          {mod: 'smoke', src: import.meta.resolve('./images/markers/smoke.png')},
         ]}/>
       </div>
       <div style={{background: argColor, overflow: 'auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
         <ModToggles selected={defenderMods} setSelected={setDefenderMods} mods={[
           {mod: 'night', src: import.meta.resolve('./images/markers/night.svg')},
+          {mod: 'twilight', src: import.meta.resolve('./images/markers/twilight.svg')},
           {mod: 'illum', src: import.meta.resolve('./images/markers/illum.png')},
           {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
           {mod: 'smoke', src: import.meta.resolve('./images/markers/smoke.png')},
@@ -114,6 +136,7 @@ export function App2() {
     <div style={wide}/>
     <div style={cell}/>
     <div style={cell}/>
+    <div style={wide}/>
   </div>
 }
 

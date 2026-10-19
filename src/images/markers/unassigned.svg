@@ -43,7 +43,8 @@
        width="19.90123"
        height="19.901234"
        x="137.42383"
-       y="79.106018" /><text
+       y="79.106018"
+       ry="2.1619725" /><text
        xml:space="preserve"
        style="font-size:16.935px;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, ';fill:#ffffff;fill-opacity:1;stroke-width:2.48929;stroke-linecap:round;stroke-opacity:0.986577;paint-order:stroke fill markers"
        x="143.69472"
