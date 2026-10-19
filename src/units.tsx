@@ -2,7 +2,7 @@ import {useSide} from "./useSide.tsx";
 import {cell} from "./mainLayoutCell.tsx";
 import {bgColor} from "./bgColor.tsx";
 import {size} from "./size.tsx";
-import {unitName} from "./unitName.tsx";
+import {UnitDef, unitName} from "./unitName.tsx";
 
 const brit = import.meta.glob<string>(`./images/units/Brit/*.png`);
 const arg = import.meta.glob<string>(`./images/units/Arg/*.png`);
@@ -13,8 +13,8 @@ const urlByName: Record<string, string> = Object.fromEntries(
   Object.keys({...brit, ...arg, ...steps}).map(path => [unitName(path), import.meta.resolve(path)])
 );
 
-export function unitUrl(name: string) {
-  return urlByName[name];
+export function unitUrl(name: UnitDef) {
+  return urlByName[UnitDef.unbrand(name)];
 }
 
 export function Units(props: {
@@ -27,8 +27,8 @@ export function Units(props: {
     {Object.keys(props.units).map(unitName).map(name =>
       <img src={unitUrl(name)}
            style={{width: `${size}mm`, cursor: 'pointer'}}
-           alt={name}
-           onClick={() => update(props.field)(prev => [...prev, name])}/>
+           alt={`${name}`}
+           onClick={() => update(props.field)(prev => [...prev, name] as string[])}/>
     )}
   </div>;
 }
