@@ -46,6 +46,7 @@ describe('unitStats', () => {
       targetType: 'both',
       steps: 3,
       defenseStrength: 0,
+      type: 'arty'
     } satisfies UnitStats)
   })
 });

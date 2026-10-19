@@ -18,6 +18,7 @@ export type UnitStats = {
   range: number;
   steps: number;
   trajectory: 'high' | 'low',
+  type?: string,
 } & ({
   targetType: 'area',
   morale: number
@@ -40,9 +41,12 @@ export class UnitDefColorError extends Error {
   }
 }
 
-// '<fire><w|y>.<range><b|w>.<morale|defense><w|b|y>[.<steps>]'
+// '<fire><w|y>.<range><b|w>.<morale|defense><w|b|y>[.<steps>][.<tag>...]', e.g. '6w.40w.0b.3.arty'
 export function unitStats(unit: UnitDef): UnitStats {
-  const [fire, range, defence, steps] = UnitDef.unbrand(unit).split('.').map(part => {
+  const isTag = (part: string) => /^[a-z]{2,}$/.test(part);
+  const parts = UnitDef.unbrand(unit).split('.');
+  const type = parts.find(isTag);
+  const [fire, range, defence, steps] = parts.filter(part => !isTag(part)).map(part => {
     const [, value, color] = part.match(/^(\d+)([wby]?)$/) || panic(new UnitDefError(unit));
     return {value: Number(value), color};
   });
@@ -66,6 +70,7 @@ export function unitStats(unit: UnitDef): UnitStats {
     range: range.value,
     trajectory: range.color === WHITE ? 'high' : 'low',
     steps: steps?.value ?? infantrySteps,
+    type,
   } as const;
   const targetType = typeByColor[defence.color] || panic(new UnitDefColorError(defence.color, typeByColor));
   if (targetType === 'area') {

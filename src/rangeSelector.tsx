@@ -6,7 +6,9 @@ import {size} from "./size.tsx";
 
 export function RangeSelector() {
   const {state, update} = useContext(Context);
-  return <div style={{...wide,}}>
+  return <div style={{...wide,
+    justifyContent: 'start',
+  }}>
     {R.range(0, 30 + 1).map(it => <button style={{
       width: `${size}mm`,
       minWidth: `${size}mm`,

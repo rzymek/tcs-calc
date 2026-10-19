@@ -45,9 +45,7 @@ export function MainLayout() {
       <SwitchSidesButton/>
     </SelectedImages>
     <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', fontSize: 10}}>
-      Firepower:
-      Spotted: {resolvedFire.spotted ? '✅' : '❌'}
-      Terrain: {state.terrain.type}
+      {JSON.stringify(resolvedFire, null, 2)}
     </div>
   </div>
 }
