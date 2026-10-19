@@ -1,0 +1,1 @@
+export const size = 12; // mm
