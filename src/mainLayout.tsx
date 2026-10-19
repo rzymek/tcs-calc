@@ -6,12 +6,10 @@ import {size} from "./size.tsx";
 import {SwitchSidesButton} from "./switchSidesButton.tsx";
 import {wide} from "./mainLayoutCell.tsx";
 import {TerrainSelector} from "./terrainSelector.tsx";
-import {Units, units} from "./units.tsx";
+import {steps, Units, units} from "./units.tsx";
 import {RangeSelector} from "./rangeSelector.tsx";
 import {SelectedImages} from "./selectedImages.tsx";
 import {Modifiers} from "./modifiers.tsx";
-
-const steps = import.meta.glob<string>(`./images//steps/*.png`);
 
 export function MainLayout() {
   const {state} = useContext(Context);

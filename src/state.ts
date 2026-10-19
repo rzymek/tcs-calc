@@ -120,7 +120,7 @@ export const initialState: State = {
   },
   terrain: {
     name: 'Clean',
-    type: 'clean_open',
+    type: 'open',
   },
   distance: 1,
 }

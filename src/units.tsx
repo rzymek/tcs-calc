@@ -1,12 +1,21 @@
 import {useSide} from "./useSide.tsx";
 import {cell} from "./mainLayoutCell.tsx";
 import {bgColor} from "./bgColor.tsx";
-import {resolveAll} from "./resolveAll.tsx";
 import {size} from "./size.tsx";
+import {unitName} from "./unitName.tsx";
 
 const brit = import.meta.glob<string>(`./images/units/Brit/*.png`);
 const arg = import.meta.glob<string>(`./images/units/Arg/*.png`);
+export const steps = import.meta.glob<string>(`./images/steps/*.png`);
 type UnitImages = typeof brit;
+
+const urlByName: Record<string, string> = Object.fromEntries(
+  Object.keys({...brit, ...arg, ...steps}).map(path => [unitName(path), import.meta.resolve(path)])
+);
+
+export function unitUrl(name: string) {
+  return urlByName[name];
+}
 
 export function Units(props: {
   field: 'units' | 'stepLosses',
@@ -15,11 +24,11 @@ export function Units(props: {
 }) {
   const [, update] = useSide(props.side);
   return <div style={{...cell, background: bgColor[props.side]}}>
-    {resolveAll(props.units).map(img =>
-      <img src={img}
+    {Object.keys(props.units).map(unitName).map(name =>
+      <img src={unitUrl(name)}
            style={{width: `${size}mm`, cursor: 'pointer'}}
-           alt={img}
-           onClick={() => update('units')(prev => [...prev, img])}/>
+           alt={name}
+           onClick={() => update(props.field)(prev => [...prev, name])}/>
     )}
   </div>;
 }
