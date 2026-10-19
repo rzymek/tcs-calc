@@ -27,7 +27,7 @@ export function areaTargetStacking(state: State, spotted: boolean): number {
   return possiblePenalty ? value : Math.max(0, value);
 }
 
-function includesLowTrajectory(state: State) {
+export function includesLowTrajectory(state: State) {
   return R.pipe(state.attacker.units,
     R.map(unitStats),
     R.filter(unit => unit.trajectory === 'low'),
