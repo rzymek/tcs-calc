@@ -46,6 +46,7 @@ declare module 'virtual:static-assets' {
     "markers/misc_steploss-4.png" |
     "markers/night.svg" |
     "markers/paralyzed.png" |
+    "markers/road-moving.png" |
     "markers/smoke.png" |
     "markers/suppressed.png" |
     "markers/target-hex.png" |
