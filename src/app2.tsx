@@ -10,6 +10,7 @@ const cell: CSSProperties = {
   display: 'flex',
   flexWrap: 'wrap',
   alignContent: 'flex-start',
+  justifyContent: 'center',
 } as const;
 const wide: CSSProperties = {...cell, gridColumn: 'span 2', flexWrap: 'nowrap', overflowY: 'hidden'};
 
@@ -51,7 +52,7 @@ export function App2() {
           {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
         ]}/>
       </div>
-      <div style={{background: argColor, overflow: 'auto'}}>
+      <div style={{background: argColor, overflow: 'auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
         <ModToggles selected={defenderMods} setSelected={setDefenderMods} mods={[
           {mod: 'night', src: import.meta.resolve('./images/markers/night.svg')},
           {mod: 'illum', src: import.meta.resolve('./images/markers/illum.png')},
@@ -60,6 +61,7 @@ export function App2() {
           {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
           {mod: 'dugin', src: import.meta.resolve('./images/markers/dugin.png')},
           {mod: 'unassigned', src: import.meta.resolve('./images/markers/unassigned.svg')},
+          {mod: 'road-moving', src: import.meta.resolve('./images/markers/road-moving.png')},
         ]}/>
       </div>
     </div>
@@ -72,7 +74,7 @@ export function App2() {
     }}>
       {resolveAll(terrain).map(img => <div style={{position: 'relative', cursor: 'pointer'}}
                                            onClick={() => setSelectedTerrain(img)}>
-        <img src={img} style={{width: '100%', border: 0, display: 'block'}} alt={img}/>
+        <img src={img} style={{width: '100%', height: `${size}mm`, border: 0, display: 'block'}} alt={img}/>
         {selectedTerrain === img && <div style={{
           position: 'absolute',
           inset: 0,
