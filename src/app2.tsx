@@ -1,4 +1,4 @@
-import {CSSProperties} from "preact/compat";
+import {CSSProperties, useState} from "preact/compat";
 import "./app.css";
 import * as R from "remeda";
 
@@ -19,6 +19,8 @@ const britColor = 'lightblue';
 const argColor = 'lightcoral';
 
 export function App2() {
+  const [selectedTerrain, setSelectedTerrain] = useState<string>();
+  const [distance, setDistance] = useState<number>();
   return <div style={{
     position: 'absolute',
     inset: 0,
@@ -54,13 +56,26 @@ export function App2() {
       overflow: 'hidden',
       padding: 0
     }}>
-      {resolveAll(terrain).map(img => <img src={img} style={{width: '100%', border: 0}} alt={img}/>)}
+      {resolveAll(terrain).map(img => <div style={{position: 'relative', cursor: 'pointer'}}
+                                           onClick={() => setSelectedTerrain(img)}>
+        <img src={img} style={{width: '100%', border: 0, display: 'block'}} alt={img}/>
+        {selectedTerrain === img && <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0, 100, 255, 0.5)',
+          pointerEvents: 'none',
+        }}/>}
+      </div>)}
     </div>
     <div style={{...wide,}}>
-      {R.range(0, 30 + 1).map(it => <button style={{width: '10mm', minWidth: '10mm'}}>{it}</button>)}
+      {R.range(0, 30 + 1).map(it => <button style={{
+        width: '10mm',
+        minWidth: '10mm',
+        ...(distance === it && {background: 'rgb(0,0,255,0.5)', color: 'white'}),
+      }} onClick={() => setDistance(it)}>{it}</button>)}
     </div>
-    <div style={cell}></div>
-    <div style={cell}/>
+    <div style={cell}>brit selected</div>
+    <div style={cell}>arg selected</div>
     <div style={wide}/>
     <div style={cell}/>
     <div style={cell}/>
