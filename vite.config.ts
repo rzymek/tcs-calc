@@ -2,6 +2,7 @@
 import {defineConfig} from 'vite'
 import preact from '@preact/preset-vite'
 import {VitePWA} from 'vite-plugin-pwa'
+import staticAssetsPlugin from 'vite-static-assets-plugin';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
         environment: "node",
     },
     plugins: [
+        staticAssetsPlugin({ directory: 'src/images' }),
         preact(),
         VitePWA({
             registerType: 'autoUpdate',

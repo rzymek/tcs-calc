@@ -17,7 +17,8 @@
   "dependencies": {
     "preact": "^10.19.3",
     "react-dice-roll": "^1.2.2",
-    "remeda": "^1.30.0"
+    "remeda": "^1.30.0",
+    "vite-static-assets-plugin": "^3.1.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-source": "^7.23.3",
