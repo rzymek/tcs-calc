@@ -13,14 +13,19 @@ const wide: CSSProperties = {...cell, gridColumn: 'span 2', flexWrap: 'nowrap', 
 
 const brit = import.meta.glob<string>(`./images/units/Brit/*.png`);
 const arg = import.meta.glob<string>(`./images/units/Arg/*.png`);
-const markers = import.meta.glob<string>(`./images/markers/*.{png,svg}`);
 const terrain = import.meta.glob<string>(`./images/terrain/*.png`);
 const britColor = 'lightblue';
 const argColor = 'lightcoral';
 
+const paralyzed: Mod = {mod: 'paralyzed', src: import.meta.resolve('./images/markers/paralyzed.png')};
+
 export function App2() {
   const [selectedTerrain, setSelectedTerrain] = useState<string>();
   const [distance, setDistance] = useState<number>();
+  const [britSelected, setBritSelected] = useState<string[]>([]);
+  const [argSelected, setArgSelected] = useState<string[]>([]);
+  const [attackerMods, setAttackerMods] = useState<string[]>([]);
+  const [defenderMods, setDefenderMods] = useState<string[]>([]);
   return <div style={{
     position: 'absolute',
     inset: 0,
@@ -29,24 +34,30 @@ export function App2() {
     gridTemplateRows: `1fr 12mm 10mm 10mm 1fr 2cm 12mm`,
   }}>
     <div style={{...cell, background: britColor}}>
-      {resolveAll(brit).map(img => <img src={img} style={{width: '1cm'}} alt={img}/>)}
+      {resolveAll(brit).map(img => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+                                        onClick={() => setBritSelected(prev => [...prev, img])}/>)}
     </div>
     <div style={{...cell, background: argColor}}>
-      {resolveAll(arg).map(img => <img src={img} style={{width: '1cm'}} alt={img}/>)}
+      {resolveAll(arg).map(img => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+                                       onClick={() => setArgSelected(prev => [...prev, img])}/>)}
     </div>
     <div style={{...wide, display: 'grid', gridTemplateColumns: `${2 * 12}mm 1fr`, overflow: 'hidden'}}>
       <div style={{background: 'lightblue', overflow: 'auto'}}>
-        <img src={import.meta.resolve('./images/markers/suppressed.png')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/arty.png')} style={{width: '1cm'}} alt="impop"/>
+        <ModToggles selected={attackerMods} setSelected={setAttackerMods} mods={[
+          {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
+          {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
+        ]}/>
       </div>
       <div style={{background: argColor, overflow: 'auto'}}>
-        <img src={import.meta.resolve('./images/markers/night.svg')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/illum.png')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/suppressed.png')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/smoke.png')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/arty.png')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/dugin.png')} style={{width: '1cm'}} alt="impop"/>
-        <img src={import.meta.resolve('./images/markers/unassigned.svg')} style={{width: '1cm'}} alt="impop"/>
+        <ModToggles selected={defenderMods} setSelected={setDefenderMods} mods={[
+          {mod: 'night', src: import.meta.resolve('./images/markers/night.svg')},
+          {mod: 'illum', src: import.meta.resolve('./images/markers/illum.png')},
+          {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
+          {mod: 'smoke', src: import.meta.resolve('./images/markers/smoke.png')},
+          {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
+          {mod: 'dugin', src: import.meta.resolve('./images/markers/dugin.png')},
+          {mod: 'unassigned', src: import.meta.resolve('./images/markers/unassigned.svg')},
+        ]}/>
       </div>
     </div>
     <div style={{
@@ -74,12 +85,58 @@ export function App2() {
         ...(distance === it && {background: 'rgb(0,0,255,0.5)', color: 'white'}),
       }} onClick={() => setDistance(it)}>{it}</button>)}
     </div>
-    <div style={cell}>brit selected</div>
-    <div style={cell}>arg selected</div>
+    <div style={{...cell, background: britColor}}>
+      {britSelected.map((img, idx) => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+                                           onClick={() => setBritSelected(prev => prev.filter((_, i) => i !== idx))}/>)}
+    </div>
+    <div style={{...cell, background: argColor}}>
+      {argSelected.map((img, idx) => <img src={img} style={{width: '1cm', cursor: 'pointer'}} alt={img}
+                                          onClick={() => setArgSelected(prev => prev.filter((_, i) => i !== idx))}/>)}
+    </div>
     <div style={wide}/>
     <div style={cell}/>
     <div style={cell}/>
   </div>
+}
+
+type Mod = { mod: string, src: string, next?: Mod };
+
+function ModToggles({mods, selected, setSelected}: {
+  mods: Mod[],
+  selected: string[],
+  setSelected: (update: (prev: string[]) => string[]) => void,
+}) {
+  // click cycles: unselected -> mod -> mod.next -> ... -> unselected
+  const toggle = (first: Mod) => setSelected(prev => {
+    for (let it: Mod | undefined = first; it; it = it.next) {
+      if (prev.includes(it.mod)) {
+        const rest = prev.filter(m => m !== it!.mod);
+        return it.next ? [...rest, it.next.mod] : rest;
+      }
+    }
+    return [...prev, first.mod];
+  });
+  const current = (first: Mod) => {
+    for (let it: Mod | undefined = first; it; it = it.next) {
+      if (selected.includes(it.mod)) return it;
+    }
+  };
+  return <>
+    {mods.map(first => {
+      const active = current(first);
+      const {mod, src} = active ?? first;
+      return <div style={{position: 'relative', display: 'inline-block', cursor: 'pointer'}}
+                  onClick={() => toggle(first)}>
+        <img src={src} style={{width: '1cm', display: 'block'}} alt={mod}/>
+        {active && <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0, 100, 255, 0.5)',
+          pointerEvents: 'none',
+        }}/>}
+      </div>;
+    })}
+  </>;
 }
 
 function resolveAll(paths: Record<string, unknown>) {
