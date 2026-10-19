@@ -123,16 +123,16 @@ declare module 'virtual:static-assets' {
     "terrain/06_gully-partly pro.png" |
     "terrain/08_airstrip-open.png" |
     "terrain/09_bridge-billiard table.png" |
-    "units/Arg/00_4w.5b.5w.png" |
-    "units/Arg/02_3w.5b.5w.png" |
-    "units/Arg/04_6w.5b.4w.png" |
-    "units/Arg/06_6w.5b.3w.png" |
-    "units/Arg/08_2w.3b.7w.png" |
-    "units/Arg/10_3w.10b.5w.png" |
-    "units/Arg/12_4w.40w.6w.png" |
-    "units/Arg/14_4w.40w.7w.png" |
-    "units/Arg/16_5y.10b.0b.png" |
-    "units/Arg/18_3w.53w.6w.1w.png" |
+    "units/Arg/00-4w.5b.5w.png" |
+    "units/Arg/02-3w.5b.5w.png" |
+    "units/Arg/04-6w.5b.4w.png" |
+    "units/Arg/06-6w.5b.3w.png" |
+    "units/Arg/08-2w.3b.7w.png" |
+    "units/Arg/10-3w.10b.5w.png" |
+    "units/Arg/12-4w.40w.6w.png" |
+    "units/Arg/14-4w.40w.7w.png" |
+    "units/Arg/16-5y.10b.0b.png" |
+    "units/Arg/18-3w.53w.6w.1w.png" |
     "units/Arg/20_4w.12b.0b.png" |
     "units/Arg/22_6w.12b.0b.png" |
     "units/Arg/24_6w.40w.0b.3w.png" |

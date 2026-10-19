@@ -4,10 +4,13 @@ export interface Terrain {
 }
 
 export function terrainFromImgName(img: string): Terrain {
-  const match = img.match(/\d+_(.+)-(.+)\.png$/);
+  const match = decodeURIComponent(img).match(/\d+_(.+)-(.+)\.png$/);
   if (!match) {
     throw new Error(`Invalid terrain image: ${img}`);
   }
   const [, name, type] = match;
-  return {name, type};
+  return {
+    type,
+    name,
+  };
 }

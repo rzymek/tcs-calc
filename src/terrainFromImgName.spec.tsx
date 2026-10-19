@@ -8,4 +8,10 @@ describe('terrainFromImgName', () => {
       type: 'partly pro',
     });
   })
+  it('url-encoded', () => {
+    expect(terrainFromImgName('/src/images/terrain/02_gorse%20line-partly%20pro.png')).toEqual({
+      name: 'gorse line',
+      type: 'partly pro',
+    });
+  })
 });

@@ -10,10 +10,13 @@ import {steps, Units, units} from "./units.tsx";
 import {RangeSelector} from "./rangeSelector.tsx";
 import {SelectedImages} from "./selectedImages.tsx";
 import {Modifiers} from "./modifiers.tsx";
+import {fireResolution} from "./fireResolution.tsx";
 
 export function MainLayout() {
   const {state} = useContext(Context);
   const [attackingUnits, defendingUnits] = state.attackingSide === 'Britain' ? units : R.pipe(units, R.reverse());
+
+  const resolvedFire = fireResolution(state)
 
   return <div style={{
     position: 'absolute',
@@ -41,9 +44,11 @@ export function MainLayout() {
     <SelectedImages side='defender'>
       <SwitchSidesButton/>
     </SelectedImages>
-    <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', fontSize: 10}}>{
-      JSON.stringify(state, null, 2)
-    }</div>
+    <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', fontSize: 10}}>
+      Firepower:
+      Spotted: {resolvedFire.spotted ? '✅' : '❌'}
+      Terrain: {state.terrain.type}
+    </div>
   </div>
 }
 
