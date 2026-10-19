@@ -146,6 +146,7 @@ declare module 'virtual:static-assets' {
     "units/Brit/10_5w.5b.2w.png" |
     "units/Brit/90_1y.7b.2y.1.vehicle.png" |
     "units/Brit/95_14y.9b.0b.2.milan.png" |
+    "units/units.spec.ts" |
     "vassal/1d6_button16.png" |
     "vassal/2d626.png" |
     "vassal/Argi-Morale-Box.png" |

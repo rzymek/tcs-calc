@@ -1,6 +1,7 @@
-import {SideState, State} from "./state.ts";
+import {SideState} from "./state.ts";
 import {rangeTable} from "./rangeTable.tsx";
 import {findByRange} from "./findByRange.tsx";
+import {unitStats, UnitStats} from "./unitName.tsx";
 
 interface AreaFireRangeColumn {
   inf: number,
@@ -29,5 +30,19 @@ Low-Trajectory firers except Infantry.
  */
 export function areaFireRange(state: SideState, distance:number) {
   const column = findByRange(areaFireRangeTable, distance);
-  return 0;
+  const modifiers = state.units
+    .map(unitStats)
+    .filter(stats => stats.firerType === 'area')
+    .map(stats => column[rowOf(stats)]);
+  return modifiers.length > 0 ? Math.min(...modifiers) : 0;
+}
+
+function rowOf(stats: UnitStats): keyof AreaFireRangeColumn {
+  if (stats.type === 'inf') {
+    return 'inf';
+  }
+  if (stats.type === 'mrt') {
+    return 'mrt';
+  }
+  return stats.trajectory;
 }

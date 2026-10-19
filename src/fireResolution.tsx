@@ -13,7 +13,7 @@ export function fireResolution(state: State) {
   return {
     infFirepower: infFirepower(state),
     areaTargetStacking: areaTargetStacking(state, spotted),
-    areaFireRange: areaFireRange(state),
+    areaFireRange: areaFireRange(state.attacker, state.distance),
     spottingRange,
     firerInfSteps: countSteps({
       ...state.attacker,
