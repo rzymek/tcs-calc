@@ -1,4 +1,4 @@
-import {CSSProperties, useContext} from "preact/compat";
+import {CSSProperties, PropsWithChildren, useContext} from "preact/compat";
 import "./app.css";
 import * as R from "remeda";
 import {Context} from "./context.tsx";
@@ -128,11 +128,9 @@ function RangeSelector() {
 
 function SwitchSidesButton() {
   return <button style={{
-    gridArea: "5 / 1 / 6 / 3",
-    alignSelf: "end",
-    justifySelf: "center",
-    marginBottom: "2mm",
-    zIndex: 1,
+    position:'absolute',
+    right: '2mm',
+    bottom: '2mm',
     width: `${size}mm`,
     height: `${size}mm`
   }}>
@@ -141,7 +139,7 @@ function SwitchSidesButton() {
 }
 
 export function MainLayout() {
-  const {state}  = useContext(Context);
+  const {state} = useContext(Context);
   const [attackingUnits, defendingUnits] = state.attackingSide === 'Britain' ? units : R.pipe(units, R.reverse());
 
   return <div style={{
@@ -156,9 +154,7 @@ export function MainLayout() {
       ${size}mm 
       ${size}mm 
       2fr 
-      ${size}mm 
-      ${2 * size}mm 
-      ${size + 2}mm
+      1fr
     `,
   }}>
     <Units side="attacker" field='units' units={attackingUnits}/>
@@ -169,27 +165,29 @@ export function MainLayout() {
     <TerrainSelector/>
     <RangeSelector/>
     <SelectedImages side='attacker'/>
-    <SelectedImages side='defender'/>
-    <div style={wide}/>
-    <div style={cell}/>
-    <div style={cell}/>
-    <div style={wide}/>
+    <SelectedImages side='defender'>
+      <SwitchSidesButton/>
+    </SelectedImages>
+    <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', fontSize:10}}>{
+      JSON.stringify(state, null, 2)
+    }</div>
   </div>
 }
 
 type Mod = { mod: string, src: string, next?: Mod };
 
-function SelectedImages(props: {
+function SelectedImages(props: PropsWithChildren<{
   side: 'attacker' | 'defender',
-}) {
+}>) {
   const [side, updateSide] = useSide(props.side);
-  return <div style={{...cell, background: bgColor[props.side]}}>
+  return <div style={{...cell, background: bgColor[props.side], position: 'relative'}}>
     {(['units', 'stepLosses'] as const).flatMap(key =>
       side[key].map((img, idx) =>
         <img src={img}
              style={{width: `${size}mm`, cursor: 'pointer'}}
              alt={img}
              onClick={() => updateSide(key)(prev => prev.filter((_, i) => i !== idx))}/>))}
+    {props.children}
   </div>;
 }
 
