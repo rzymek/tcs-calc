@@ -1,5 +1,6 @@
 import {range} from "remeda";
 import {Terrain} from "./terrainFromImgName.tsx";
+import {UnitDef} from "./unitName.tsx";
 
 export function firepowerDef(index: number) {
   return {
@@ -84,7 +85,7 @@ export type SingleSelectionFields = keyof TPickOne;
 export type MultipleSelectionFields = keyof TPickMany;
 
 export type SideState = {
-  units: string[],
+  units: UnitDef[],
   stepLosses: string[],
   mods: string[],
 }

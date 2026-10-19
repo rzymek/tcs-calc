@@ -4,7 +4,7 @@ import {UnitDef, unitName, UnitStats, unitStats} from "./unitName.tsx";
 describe('unitName', () => {
   it('strips directory, numeric prefix and extension', () => {
     expect(unitName('./images/units/Arg/00_4w.5b.5w.png')).toEqual('4w.5b.5w');
-    expect(unitName('./images/units/Brit/02-2w.7b.1w.png')).toEqual('2w.7b.1w');
+    expect(unitName('./images/units/Brit/24_6w.40w.0b.3.arty.png')).toEqual('6w.40w.0b.3.arty');
   })
   it('handles names without numeric prefix', () => {
     expect(unitName('./images/steps/1.png')).toEqual('1');
@@ -16,7 +16,7 @@ describe('unitName', () => {
 
 describe('unitStats', () => {
   it('Spt-2', () => {
-    expect(unitStats(UnitDef.brand('14y.9b.0b.2w'))).toEqual({
+    expect(unitStats(UnitDef.brand('14y.9b.0b.2'))).toEqual({
       firerType: 'point',
       fireStrength: 14,
       range: 9,
@@ -37,4 +37,17 @@ describe('unitStats', () => {
       morale: 1
     } satisfies UnitStats)
   })
-})
+  it('A-GAA 4', () => {
+    expect(unitStats(UnitDef.brand('6w.40w.0b.3.arty'))).toEqual({
+      firerType: 'area',
+      fireStrength: 6,
+      range: 40,
+      trajectory: 'high',
+      targetType: 'both',
+      steps: 3,
+      defenseStrength: 0,
+    } satisfies UnitStats)
+  })
+});
+
+
