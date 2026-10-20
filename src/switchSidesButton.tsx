@@ -1,5 +1,6 @@
-import {size} from "./size.tsx";
 import {FireType} from "./tcs/state.ts";
+
+const size = 10;
 
 export function SwitchSidesButton(props: { onClick(): void }) {
   return <button style={{
