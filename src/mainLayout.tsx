@@ -3,7 +3,7 @@ import "./app.css";
 import * as R from "remeda";
 import {Context} from "./context.tsx";
 import {size} from "./size.tsx";
-import {SwitchSidesButton} from "./switchSidesButton.tsx";
+import {InfoButton, SwitchSidesButton} from "./switchSidesButton.tsx";
 import {wide} from "./mainLayoutCell.tsx";
 import {TerrainSelector} from "./terrainSelector.tsx";
 import {steps, Units, units} from "./units.tsx";
@@ -76,7 +76,17 @@ export function MainLayout() {
     <RangeSelector/>
     <SelectedImages side='attacker'/>
     <SelectedImages side='defender'>
-      <SwitchSidesButton/>
+      <div style={{
+        position: 'absolute',
+        right: '2mm',
+        bottom: '2mm',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1mm'
+      }}>
+        <SwitchSidesButton/>
+        <InfoButton/>
+      </div>
     </SelectedImages>
     <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', padding: '1mm', fontSize: 10}}>
       <Input2D6 onChange={v => setDice(v)}/>
