@@ -9,8 +9,6 @@ import {RangeSelector} from "./rangeSelector.tsx";
 import {SelectedImages} from "./selectedImages.tsx";
 import {Modifiers} from "./modifiers.tsx";
 import {fireResolution, fireTableInput} from "./fireResolution.tsx";
-import {fireTable} from "./firetable.ts";
-import {morale} from "./morale.ts";
 import {effectiveMorale2} from "./effectiveMorale2.tsx";
 import {FireExplanation} from "./fireExplanation.tsx";
 import {DiceAndResult} from "./diceAndResult.tsx";
@@ -24,11 +22,9 @@ export function MainLayout() {
 
   const resolvedFire = fireResolution(state)
   const input = fireTableInput(resolvedFire);
-  const result = fireTable.result(input, dice)
   // TODO: Bn morale input
   const bnMorale = 0;
   const effectiveMorale = effectiveMorale2(state, bnMorale);
-  const moraleResult = effectiveMorale === undefined ? undefined : morale(effectiveMorale, dice)
   if (view === 'info') {
     return <FireExplanation dice={dice} bnMorale={bnMorale} onBack={() => setView('main')}/>;
   }
@@ -45,8 +41,8 @@ export function MainLayout() {
       ${2 * (size + 1) + 1}mm 
       ${size}mm 
       ${size}mm 
-      1fr 
       ${2 * (size + 1) + 1}mm 
+      1fr 
     `,
   }}>
     <Units side="attacker" field='units' units={attackingUnits}/>
@@ -56,9 +52,9 @@ export function MainLayout() {
     <Modifiers/>
     <TerrainSelector/>
     <RangeSelector/>
+    <DiceAndResult dice={dice} onDiceChange={setDice} fireInput={input} effectiveMorale={effectiveMorale}/>
     <SelectedImages side='attacker'/>
     <SelectedImages side='defender'/>
-    <DiceAndResult dice={dice} onDiceChange={setDice} fireResult={result} moraleResult={moraleResult?.result}/>
     <ActionButtons onInfo={() => setView('info')}/>
   </div>
 }

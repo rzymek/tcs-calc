@@ -1,4 +1,3 @@
-import {size} from "./size.tsx";
 import {range} from "remeda";
 
 // pip positions on a 3x3 grid (0..2), per die face
@@ -10,7 +9,7 @@ const pips: Record<number, [number, number][]> = {
   5: [[0, 0], [2, 0], [1, 1], [0, 2], [2, 2]],
   6: [[0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]],
 };
-
+const size = 10;
 export function D6Input(props: {
   value?: number;
   color?: string;
