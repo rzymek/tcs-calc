@@ -23,7 +23,7 @@ export function DiceAndResult(props: PropsWithChildren<{
   const rolled = props.dice > 0;
   return <div style={{
     ...wide,
-    flexWrap: 'nowrap',
+    flexWrap: 'wrap',
     justifyContent: 'flex-start',
     alignItems: 'start',
     gap: '3mm',
@@ -32,9 +32,9 @@ export function DiceAndResult(props: PropsWithChildren<{
   }}>
     <div style={{display: 'flex', gap: '3mm', flexWrap: 'wrap', maxWidth: `${6*(10+1)}mm`}}>
       <Input2D6 value={props.dice} onChange={props.onDiceChange}/>
-      {props.children}
     </div>
-    <div style={{display: 'flex', flexDirection: 'column', gap: '1mm', fontSize: 11, flex: 1, minWidth: 0}}>
+    {props.children}
+    <div style={{display: 'flex', flexDirection: 'column', gap: '1mm', fontSize: 11, flex: 1, minWidth: '1.5cm'}}>
       {input === undefined
         ? <b style={{color: '#c00'}}>{fire.restriction}</b>
         : <OutcomeProbabilities

@@ -1,6 +1,6 @@
 import {InfoButton} from "./switchSidesButton.tsx";
 
-export function ActionButtons(props: { onInfo(): void }) {
+export function FloatingButtons(props: { onInfo(): void }) {
   return <div style={{
     position: 'fixed',
     right: '2mm',
