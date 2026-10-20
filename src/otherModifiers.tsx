@@ -22,7 +22,7 @@ import {Modifier} from "./modifiers.tsx";
  * (3) Not at range 0
  * (4) Low-Trajectory Area Fire only (tank cover)
  */
-export function otherModifiers(attacker: SideState, defender: SideState, distance: number) {
+export function otherModifiersCandidates(attacker: SideState, defender: SideState, distance: number) {
   const firers = attacker.units.map(unitStats);
   const artillery = firers.length > 0 && firers.every(unit => unit.type === 'arty');
   const lowTrajectoryAreaFire = firers.some(unit => unit.firerType === 'area' && unit.trajectory === 'low');
@@ -31,7 +31,7 @@ export function otherModifiers(attacker: SideState, defender: SideState, distanc
     .some(unit => unit.targetType !== 'area' && unit.defenseStrength >= 2);
   const has = (side: SideState, ...mods: Modifier[]) => mods.some(mod => side.mods.includes(mod));
 
-  const modifiers = [
+  return [
     // target
     {value: -2, description: 'Target: Night', applies: has(defender, 'night') && !artillery},
     {value: -1, description: 'Target: Illuminated or Twilight', applies: has(defender, 'illum', 'twilight') && !artillery},
@@ -47,7 +47,10 @@ export function otherModifiers(attacker: SideState, defender: SideState, distanc
       {value: -1, description: `${label}: Smoke`, applies: has(side, 'smoke') && !artillery},
     ]),
   ];
-  const applied = modifiers
+}
+
+export function otherModifiers(attacker: SideState, defender: SideState, distance: number) {
+  const applied = otherModifiersCandidates(attacker, defender, distance)
     .filter(it => it.applies)
     .map(({value, description}) => ({value, description}));
   return {

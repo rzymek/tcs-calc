@@ -10,6 +10,7 @@ import {otherModifiers} from "./otherModifiers.tsx";
 import {isNoLOS} from "./isNoLOS.tsx";
 import {includesLowTrajectory} from "./includesLowTrajectory.tsx";
 import {sumFirepower} from "./sumFirepower.tsx";
+import * as R from "remeda";
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
@@ -34,4 +35,15 @@ export function fireResolution(state: State) {
     noLOS: isNoLOS(state, spotted),
     spotted,
   }
+}
+
+export function fireTableInput(fire: ReturnType<typeof fireResolution>) {
+  const shift = R.pipe([
+    fire.areaTargetStacking,
+    fire.areaFireRange,
+    fire.targetTerrainPosture,
+    fire.otherModifiers.total
+  ], R.sum());
+  const firepower = fire.firepower + fire.infFirepower;
+  return {shift, firepower}
 }

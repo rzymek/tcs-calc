@@ -4,7 +4,7 @@ import {findByRange} from "./findByRange.tsx";
 import {rangeTable} from "./rangeTable.tsx";
 import {includesLowTrajectory} from "./includesLowTrajectory.tsx";
 
-const areaTargetStackingTable = rangeTable({
+export const areaTargetStackingModifiers = {
   "1-2": -3,
   "3-4": -1,
   "5-7": 0,
@@ -12,7 +12,8 @@ const areaTargetStackingTable = rangeTable({
   "10-12": 3,
   "13-19": 6,
   "20+": 10,
-});
+};
+const areaTargetStackingTable = rangeTable(areaTargetStackingModifiers);
 
 export function areaTargetStacking(state: State, spotted: boolean): number {
   const defenderSteps = countSteps(state.defender);
@@ -25,4 +26,3 @@ export function areaTargetStacking(state: State, spotted: boolean): number {
   )
   return possiblePenalty ? value : Math.max(0, value);
 }
-

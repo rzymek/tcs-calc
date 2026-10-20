@@ -12,7 +12,7 @@ const spottingTable = {
   point: 8,
 } as const;
 
-function unitSpottingRange(def: UnitDef): number {
+export function unitSpottingRange(def: UnitDef): number {
   const unit = unitStats(def);
   return R.pipe([
       spottingTable[unit.type as keyof typeof spottingTable],

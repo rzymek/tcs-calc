@@ -2,7 +2,7 @@ import {SideState} from "./state.ts";
 import {Terrain} from "./terrainFromImgName.tsx";
 import {unitStats} from "./unitName.tsx";
 
-const spottedTable = {
+export const spottedTable = {
   billiard: [+4, +2, -1],
   open: [+2, 0, -2],
   partly: [0, -2, -4],
@@ -15,7 +15,7 @@ const spottedVehicleTable = {
   billiard: [+2, +4, -1]
 } as const;
 
-const unspottedTable = {
+export const unspottedTable = {
   billiard: [+2, 0, -3],
   open: [0, -2, -5],
   partly: [-2, -5, -7],
@@ -28,14 +28,14 @@ const index = {
   fire: 1,
   dugin: 2,
 } as const;
-const rowByTerrainType: Record<string, keyof typeof spottedTable> = {
+export const rowByTerrainType: Record<string, keyof typeof spottedTable> = {
   'billiard table': 'billiard',
   'open': 'open',
   'partly pro': 'partly',
   'protective': 'protective',
 };
 
-function postures(defender: SideState): (keyof typeof index)[] {
+export function postures(defender: SideState): (keyof typeof index)[] {
   const result: (keyof typeof index)[] = [];
   if (defender.mods.includes('dugin')) {
     result.push('dugin');

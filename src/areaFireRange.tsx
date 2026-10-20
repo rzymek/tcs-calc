@@ -9,7 +9,7 @@ interface AreaFireRangeColumn {
   high: number,
   mrt: number,
 }
-const areaFireRangeTable = rangeTable({
+export const areaFireRangeModifiers = {
   '0': {inf: +4, low: +4, high: +4, mrt: 0},
   '1': {inf: +2, low: +2, high: +2, mrt: 0},
   '2': {inf: +1, low: +1, high: +1, mrt: 0},
@@ -18,7 +18,8 @@ const areaFireRangeTable = rangeTable({
   '5': {inf: -2, low: -1, high: 0, mrt: 0},
   '6-8': {inf: -3, low: -2, high: 0, mrt: 0},
   '9+': {inf: -6, low: -3, high: 0, mrt: 0},
-} satisfies Record<string, AreaFireRangeColumn>)
+} satisfies Record<string, AreaFireRangeColumn>;
+const areaFireRangeTable = rangeTable(areaFireRangeModifiers)
 
 /*
 11.3c Range. Find the range modifier
@@ -37,7 +38,7 @@ export function areaFireRange(state: SideState, distance:number) {
   return modifiers.length > 0 ? Math.min(...modifiers) : 0;
 }
 
-function rowOf(stats: UnitStats): keyof AreaFireRangeColumn {
+export function rowOf(stats: UnitStats): keyof AreaFireRangeColumn {
   if (stats.type === 'inf') {
     return 'inf';
   }

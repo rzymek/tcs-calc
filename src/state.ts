@@ -121,7 +121,7 @@ export const initialState: State = {
     mods: []
   },
   terrain: {
-    name: 'Clean',
+    name: 'clean',
     type: 'open',
   },
   distance: 1,

@@ -22,7 +22,7 @@ import * as R from "remeda";
  * make Morale Checks of their own - returns undefined if no unit in the hex checks.
  * 17.1 Battalion Morale can never drop below zero.
  */
-export function effectiveMorale2(state: State, bnMorale: number): number | undefined {
+export function moraleBreakdown(state: State, bnMorale: number) {
   const defender = state.defender;
   const targets = defender.units.map(unitStats);
   const moraleValues = targets.flatMap(unit => unit.targetType === 'area' ? [unit.morale] : []);
@@ -36,16 +36,27 @@ export function effectiveMorale2(state: State, bnMorale: number): number | undef
   const has = (side: SideState, mod: Modifier) => side.mods.includes(mod);
 
   const modifiers = [
-    {value: +1, applies: has(defender, 'arty')},
-    {value: +1, applies: has(defender, 'paralyzed')},
-    {value: +1, applies: has(defender, 'night')},
-    {value: -2, applies: has(defender, 'dugin')},
-    {value: -1, applies: pTwoPlusTarget},
-    {value: +2, applies: has(defender, 'crossfire')},
-    {value: -1, applies: ['partly pro', 'protective'].includes(state.terrain.type)},
-    {value: +1, applies: !includesLowTrajectory(state)},
-    {value: +2, applies: has(defender, 'unassigned')},
+    {value: +1, description: 'Arty Attack Zone', applies: has(defender, 'arty')},
+    {value: +1, description: 'Paralyzed', applies: has(defender, 'paralyzed')},
+    {value: +1, description: 'Night', applies: has(defender, 'night')},
+    {value: -2, description: 'Dug In', applies: has(defender, 'dugin')},
+    {value: -1, description: 'P-2 or better target in hex', applies: pTwoPlusTarget},
+    {value: +2, description: 'Cross Fire [see 11.4]', applies: has(defender, 'crossfire')},
+    {value: -1, description: 'Partly Prot. or Protective', applies: ['partly pro', 'protective'].includes(state.terrain.type)},
+    {value: +1, description: 'No Low-Trajectory Fires', applies: !includesLowTrajectory(state)},
+    {value: +2, description: 'Unassigned [6.3b]', applies: has(defender, 'unassigned')},
   ];
   const mods = R.sumBy(modifiers.filter(it => it.applies), it => it.value);
-  return unitMorale + stepLosses + Math.max(0, bnMorale) + mods;
+  const effectiveBnMorale = Math.max(0, bnMorale);
+  return {
+    unitMorale,
+    stepLosses,
+    bnMorale: effectiveBnMorale,
+    modifiers,
+    total: unitMorale + stepLosses + effectiveBnMorale + mods,
+  };
+}
+
+export function effectiveMorale2(state: State, bnMorale: number): number | undefined {
+  return moraleBreakdown(state, bnMorale)?.total;
 }
