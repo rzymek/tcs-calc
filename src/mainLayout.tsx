@@ -11,19 +11,12 @@ import {RangeSelector} from "./rangeSelector.tsx";
 import {SelectedImages} from "./selectedImages.tsx";
 import {Modifiers} from "./modifiers.tsx";
 import {fireResolution, fireTableInput} from "./fireResolution.tsx";
-import {D6Input} from "./d6Input.tsx";
 import {fireTable} from "./firetable.ts";
 import {morale} from "./morale.ts";
 import {effectiveMorale2} from "./effectiveMorale2.tsx";
 import {FireExplanation} from "./fireExplanation.tsx";
-
-function Input2D6(props: { value: number, onChange(v: number): void }) {
-  const d6d6 = props.value;
-  return <div style={{display: 'flex', gap: '1mm'}}>
-    <D6Input color="lightblue" value={Math.floor(d6d6 / 10)} onChange={(v) => props.onChange(v * 10 + d6d6 % 10)}/>
-    <D6Input color="lightpink" value={d6d6 % 10} onChange={(v) => props.onChange(d6d6 - d6d6 % 10 + v)}/>
-  </div>
-}
+import {FireOutcome} from "./fireOutcome.tsx";
+import {Input2D6} from "./input2D6.tsx";
 
 export function MainLayout() {
   const {state} = useContext(Context);
@@ -33,7 +26,6 @@ export function MainLayout() {
 
   const resolvedFire = fireResolution(state)
   const input = fireTableInput(resolvedFire);
-  const column = fireTable.column(input)
   const result = fireTable.result(input, dice)
   // TODO: Bn morale input
   const bnMorale = 0;
@@ -56,7 +48,7 @@ export function MainLayout() {
       ${size}mm 
       ${size}mm 
       1fr 
-      2fr
+      ${2 * (size + 1) + 1}mm 
     `,
   }}>
     <Units side="attacker" field='units' units={attackingUnits}/>
@@ -68,20 +60,29 @@ export function MainLayout() {
     <RangeSelector/>
     <SelectedImages side='attacker'/>
     <SelectedImages side='defender'>
-      <div style={{
-        position: 'absolute',
-        right: '2mm',
-        bottom: '2mm',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1mm'
-      }}>
-        <SwitchSidesButton/>
-        <InfoButton onClick={() => setView('info')}/>
-      </div>
     </SelectedImages>
-    <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', padding: '1mm', fontSize: 10}}>
+    <div style={{
+      ...wide,
+      flexWrap: 'wrap',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      gap: '3mm',
+      overflowY: 'auto',
+      padding: '1mm',
+    }}>
       <Input2D6 value={dice} onChange={setDice}/>
+      <FireOutcome rolled={dice > 0} fireResult={result} moraleResult={moraleResult?.result}/>
+    </div>
+    <div style={{
+      position: 'fixed',
+      right: '2mm',
+      bottom: '2mm',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1mm'
+    }}>
+      <SwitchSidesButton/>
+      <InfoButton onClick={() => setView('info')}/>
     </div>
   </div>
 }
