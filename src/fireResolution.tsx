@@ -2,18 +2,21 @@ import {State} from "./state.ts";
 import {unitStats} from "./unitName.tsx";
 import {countSteps} from "./countSteps.tsx";
 import {infFirepower} from "./infFirepower.tsx";
-import {areaTargetStacking, includesLowTrajectory} from "./areaTargetStacking.tsx";
+import {areaTargetStacking} from "./areaTargetStacking.tsx";
 import {unitsSpottingRange} from "./unitsSpottingRange.tsx";
 import {areaFireRange} from "./areaFireRange.tsx";
 import {targetTerrainPosture} from "./targetTerrainPosture.tsx";
 import {otherModifiers} from "./otherModifiers.tsx";
 import {isNoLOS} from "./isNoLOS.tsx";
+import {includesLowTrajectory} from "./includesLowTrajectory.tsx";
+import {sumFirepower} from "./sumFirepower.tsx";
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
   const spotted = state.distance <= spottingRange;
 
   return {
+    firepower: sumFirepower(state.attacker),
     infFirepower: infFirepower(state),
     areaTargetStacking: areaTargetStacking(state, spotted),
     areaFireRange: areaFireRange(state.attacker, state.distance),

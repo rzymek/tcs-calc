@@ -1,9 +1,8 @@
 import {State} from "./state.ts";
-import * as R from "remeda";
-import {unitStats} from "./unitName.tsx";
 import {countSteps} from "./countSteps.tsx";
 import {findByRange} from "./findByRange.tsx";
 import {rangeTable} from "./rangeTable.tsx";
+import {includesLowTrajectory} from "./includesLowTrajectory.tsx";
 
 const areaTargetStackingTable = rangeTable({
   "1-2": -3,
@@ -27,10 +26,3 @@ export function areaTargetStacking(state: State, spotted: boolean): number {
   return possiblePenalty ? value : Math.max(0, value);
 }
 
-export function includesLowTrajectory(state: State) {
-  return R.pipe(state.attacker.units,
-    R.map(unitStats),
-    R.filter(unit => unit.trajectory === 'low'),
-    R.hasAtLeast(1)
-  );
-}
