@@ -7,6 +7,7 @@ import {unitsSpottingRange} from "./unitsSpottingRange.tsx";
 import {areaFireRange} from "./areaFireRange.tsx";
 import {targetTerrainPosture} from "./targetTerrainPosture.tsx";
 import {otherModifiers} from "./otherModifiers.tsx";
+import {isNoLOS} from "./isNoLOS.tsx";
 
 export function fireResolution(state: State) {
   const spottingRange = unitsSpottingRange(state.defender.units);
@@ -27,6 +28,7 @@ export function fireResolution(state: State) {
       units: state.attacker.units.filter(unit => unitStats(unit).type === 'inf'),
     }),
     targetSteps: countSteps(state.defender),
+    noLOS: isNoLOS(state, spotted),
     spotted,
   }
 }
