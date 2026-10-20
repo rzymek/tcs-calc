@@ -19,13 +19,13 @@ function unitSpottingRange(def: UnitDef): number {
       spottingTable[unit.targetType as keyof typeof spottingTable],
     ],
     R.filter(isNumber),
-    R.maxBy(R.identity)
+    R.firstBy([R.identity(), 'desc'])
   ) ?? Infinity;
 }
 
 export function unitsSpottingRange(units: UnitDef[]): number {
   return R.pipe(units,
     R.map(unitSpottingRange),
-    R.maxBy(R.identity)
+    R.firstBy([R.identity(), 'desc'])
   ) ?? Infinity;
 }

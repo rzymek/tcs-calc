@@ -14,8 +14,8 @@ export function Roll2D6(props: {
     const [result, setResult] = useState<[number | undefined, number | undefined]>([undefined, undefined])
     const size = 64;
     const faceBg = '#ffffff'
-    const d1 = useRef<TDiceRef>();
-    const d2 = useRef<TDiceRef>();
+    const d1 = useRef<TDiceRef>(null);
+    const d2 = useRef<TDiceRef>(null);
 
     useEffect(() => {
         if (result.every(isDefined)) {

@@ -10,7 +10,7 @@ describe('firetable', () => {
             ['Effect', ...rawColumns].map(csvValue).join(csvSeparator),
             ...firetable.map(row => row.map(csvValue).join(csvSeparator)),
         ].join('\n');
-        const fs = require("fs/promises");
+        const fs = await import("fs/promises" as string);
         await fs.writeFile("dist/firetable.csv", csv)
     })
     it('column', () => {

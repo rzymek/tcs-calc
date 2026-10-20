@@ -1,6 +1,6 @@
 import {UnitDef, unitStats, UnitStats} from "./unitName.tsx";
 
-function isAreaTarget(units: UnitDef[]) {
+export function isAreaTarget(units: UnitDef[]) {
   const areaTargets: UnitStats['targetType'][] = ['area', 'both'];
   return units
     .map(unitStats)
