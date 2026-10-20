@@ -12,8 +12,8 @@ import {FireExplanation} from "./fireExplanation.tsx";
 import {DiceAndResult} from "./diceAndResult.tsx";
 import {ActionButtons} from "./actionButtons.tsx";
 import {goosegreenRules as rules} from "./goosegreen/rules.ts";
-import {Role} from "./state.ts";
-import {BnMoraleButton, FireTypeButton, SwitchSidesButton} from "./switchSidesButton.tsx";
+import {initialState, Role} from "./state.ts";
+import {BnMoraleButton, FireTypeButton, ResetButton, SwitchSidesButton} from "./switchSidesButton.tsx";
 
 type Selection = Record<Role, number | undefined>;
 const noSelection: Selection = {attacker: undefined, defender: undefined};
@@ -28,6 +28,11 @@ export function MainLayout() {
   const select = (role: Role) => (index: number | undefined) => setSelected(prev => ({...prev, [role]: index}));
   const switchSides = () => {
     update({attacker: state.defender, defender: state.attacker});
+    setSelected(noSelection);
+  };
+  const reset = () => {
+    update(initialState);
+    setDice(0);
     setSelected(noSelection);
   };
 
@@ -70,7 +75,7 @@ export function MainLayout() {
                         }
                       })}/>
       <SwitchSidesButton onClick={switchSides}/>
-
+      <ResetButton onClick={reset}/>
     </DiceAndResult>
     <SelectedImages side='attacker' selected={selected.attacker} onSelect={select('attacker')}/>
     <SelectedImages side='defender' selected={selected.defender} onSelect={select('defender')}

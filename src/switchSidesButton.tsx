@@ -39,6 +39,15 @@ export function InfoButton(props: { onClick(): void }) {
   </button>;
 }
 
+export function ResetButton(props: { onClick(): void }) {
+  return <button style={{
+    width: `${size}mm`,
+    height: `${size}mm`
+  }} title="Reset" onClick={props.onClick}>
+    🗑️
+  </button>;
+}
+
 export function BackButton(props: { onClick(): void }) {
   return <button style={{
     width: `${size}mm`,
