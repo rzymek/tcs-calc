@@ -9,7 +9,7 @@
     "build": "npm-run-all clean -p check:* bundle",
     "clean": "rm -rf dist",
     "check:test": "vitest --run",
-    "check:types": "tsc -b",
+    "check:types": "tsc -b; rm -f *.js *.d.ts *.tsbuildinfo",
     "bundle": "run-s build:*",
     "build:bundle": "vite build",
     "build:icons": "pwa-assets-generator --root dist --preset minimal-2023 icon.svg"
