@@ -502,6 +502,11 @@ export function FireExplanation(props: { dice: number, bnMorale: number, onBack(
       <OtherModifiers {...sectionProps}/>
       <FireTable {...sectionProps} dice={props.dice}/>
       <MoraleTable {...sectionProps} dice={props.dice} bnMorale={props.bnMorale} fireResult={fireResult}/>
+      <pre>
+        {JSON.stringify(state, null, 2)}
+        {JSON.stringify(fire, null, 2)}
+        {JSON.stringify(fireResult, null, 2)}
+      </pre>
     </div>
     <div style={{position: 'fixed', right: '2mm', bottom: '2mm'}}>
       <BackButton onClick={props.onBack}/>

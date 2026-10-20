@@ -82,8 +82,6 @@ export function MainLayout() {
     </SelectedImages>
     <div style={{...wide, display: 'block', overflowY: 'auto', whiteSpace: 'pre', padding: '1mm', fontSize: 10}}>
       <Input2D6 value={dice} onChange={setDice}/>
-      {JSON.stringify({column, result, moraleResult}, null, 2)}
-      {JSON.stringify(resolvedFire, null, 2)}
     </div>
   </div>
 }
