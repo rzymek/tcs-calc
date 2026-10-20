@@ -3,8 +3,6 @@ import "./app.css";
 import * as R from "remeda";
 import {Context} from "./context.tsx";
 import {size} from "./size.tsx";
-import {InfoButton, SwitchSidesButton} from "./switchSidesButton.tsx";
-import {wide} from "./mainLayoutCell.tsx";
 import {TerrainSelector} from "./terrainSelector.tsx";
 import {steps, Units, units} from "./units.tsx";
 import {RangeSelector} from "./rangeSelector.tsx";
@@ -15,8 +13,8 @@ import {fireTable} from "./firetable.ts";
 import {morale} from "./morale.ts";
 import {effectiveMorale2} from "./effectiveMorale2.tsx";
 import {FireExplanation} from "./fireExplanation.tsx";
-import {FireOutcome} from "./fireOutcome.tsx";
-import {Input2D6} from "./input2D6.tsx";
+import {DiceAndResult} from "./diceAndResult.tsx";
+import {ActionButtons} from "./actionButtons.tsx";
 
 export function MainLayout() {
   const {state} = useContext(Context);
@@ -59,30 +57,8 @@ export function MainLayout() {
     <TerrainSelector/>
     <RangeSelector/>
     <SelectedImages side='attacker'/>
-    <SelectedImages side='defender'>
-    </SelectedImages>
-    <div style={{
-      ...wide,
-      flexWrap: 'wrap',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      gap: '3mm',
-      overflowY: 'auto',
-      padding: '1mm',
-    }}>
-      <Input2D6 value={dice} onChange={setDice}/>
-      <FireOutcome rolled={dice > 0} fireResult={result} moraleResult={moraleResult?.result}/>
-    </div>
-    <div style={{
-      position: 'fixed',
-      right: '2mm',
-      bottom: '2mm',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1mm'
-    }}>
-      <SwitchSidesButton/>
-      <InfoButton onClick={() => setView('info')}/>
-    </div>
+    <SelectedImages side='defender'/>
+    <DiceAndResult dice={dice} onDiceChange={setDice} fireResult={result} moraleResult={moraleResult?.result}/>
+    <ActionButtons onInfo={() => setView('info')}/>
   </div>
 }
