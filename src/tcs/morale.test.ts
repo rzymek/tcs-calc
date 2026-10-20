@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {morale, moraleTable} from "./morale.ts";
-import {inRange} from "./inRange.ts";
+import {inRange} from "../inRange.ts";
+import {rolls2d6} from "./dice.ts";
 
 function moraleResult(moraleVal: number, roll: number) {
     return morale(moraleVal, roll).result;
@@ -31,9 +32,8 @@ describe('morale', () => {
         expect(morale(20, 11).column).toBe(13);
     })
     it('every roll maps to exactly one result in every column', () => {
-        const rolls = [1, 2, 3, 4, 5, 6].flatMap(tens => [1, 2, 3, 4, 5, 6].map(units => tens * 10 + units));
         for (let column = 1; column <= 13; column++) {
-            for (const roll of rolls) {
+            for (const roll of rolls2d6) {
                 const matching = moraleTable.filter(row => inRange(row[column], roll));
                 expect(matching.length, `column ${column}, roll ${roll}`).toBe(1);
             }

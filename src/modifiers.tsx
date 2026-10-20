@@ -2,9 +2,12 @@ import {useSide} from "./useSide.tsx";
 import {wide} from "./mainLayoutCell.tsx";
 import {size} from "./size.tsx";
 import {bgColor} from "./bgColor.tsx";
+import {Modifier} from "./tcs/state.ts";
 
-const paralyzed = {mod: 'paralyzed', src: new URL('./images/markers/paralyzed.png', import.meta.url).href} as const;
-const defenderModifiers = [
+type Mod = { mod: Modifier, src: string, next?: Mod };
+
+const paralyzed: Mod = {mod: 'paralyzed', src: new URL('./images/markers/paralyzed.png', import.meta.url).href};
+const defenderModifiers: Mod[] = [
   {mod: 'night', src: new URL('./images/markers/night.svg', import.meta.url).href},
   {mod: 'twilight', src: new URL('./images/markers/twilight.svg', import.meta.url).href},
   {mod: 'illum', src: new URL('./images/markers/illum.png', import.meta.url).href},
@@ -17,16 +20,15 @@ const defenderModifiers = [
   {mod: 'firing', src: new URL('./images/markers/firing.png', import.meta.url).href},
   {mod: 'moving', src: new URL('./images/markers/moving.svg', import.meta.url).href},
   {mod: 'crossfire', src: new URL('./images/markers/crossfire.png', import.meta.url).href},
-] as const;
+];
 
-const attackerModifiers = [
+const attackerModifiers: Mod[] = [
   {mod: 'suppressed', src: new URL('./images/markers/suppressed.png', import.meta.url).href, next: paralyzed},
   {mod: 'arty', src: new URL('./images/markers/arty.png', import.meta.url).href},
   {mod: 'dugin', src: new URL('./images/markers/dugin.png', import.meta.url).href},
   {mod: 'smoke', src: new URL('./images/markers/smoke.png', import.meta.url).href},
-] as const;
+];
 
-export type Modifier = (typeof defenderModifiers | typeof attackerModifiers)[number]['mod'] | typeof paralyzed['mod'];
 export function Modifiers() {
   const [attacker, updateAttacker] = useSide('attacker');
 
@@ -49,8 +51,6 @@ export function Modifiers() {
     </div>
   </div>
 }
-
-type Mod = { mod: Modifier, src: string, next?: Mod };
 
 function ModToggles({mods, selected, setSelected}: {
   mods: readonly Mod[],

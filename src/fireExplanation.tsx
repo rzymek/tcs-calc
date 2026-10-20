@@ -2,23 +2,29 @@ import {CSSProperties, PropsWithChildren, useContext, useEffect, useRef} from "p
 import * as R from "remeda";
 import {Context} from "./context.tsx";
 import {State} from "./state.ts";
-import {fireResolution, fireTableInput} from "./fireResolution.tsx";
-import {fireTable, firetable, rawColumns} from "./firetable.ts";
-import {morale, moraleTable} from "./morale.ts";
-import {moraleBreakdown} from "./effectiveMorale2.tsx";
-import {areaTargetStackingModifiers} from "./areaTargetStacking.tsx";
-import {areaFireRangeModifiers, rowOf} from "./areaFireRange.tsx";
-import {postures, rowByTerrainType, spottedTable, unspottedTable} from "./targetTerrainPosture.tsx";
-import {otherModifiersCandidates} from "./otherModifiers.tsx";
-import {unitSpottingRange} from "./unitsSpottingRange.tsx";
-import {includesLowTrajectory} from "./includesLowTrajectory.tsx";
-import {UnitDef, unitStats} from "./unitName.tsx";
+import {AreaFire, Fire, fireResolution, fireTableInput, PointFire} from "./tcs/fireResolution.ts";
+import {fireResultLosses, fireTable, firetable, pColumnLabels, rawColumns} from "./tcs/firetable.ts";
+import {moraleTable} from "./tcs/morale.ts";
+import {moraleBreakdown} from "./tcs/moraleCheck.ts";
+import {
+  areaFireRangeModifiers,
+  areaTargetStackingModifiers,
+  includesLowTrajectory,
+  rowOf
+} from "./tcs/areaFire.ts";
+import {postures, rowByTerrainType, spottedTable, unspottedTable} from "./tcs/targetTerrainPosture.ts";
+import {otherModifiersCandidates} from "./tcs/otherModifiers.ts";
+import {baseSpottingRange, spottingColumns} from "./tcs/spotting.ts";
+import {activeFirers} from "./tcs/firers.ts";
+import {differentialModifiers, differentialRow, pointFireRangeModifiers} from "./tcs/pointFire.ts";
+import {GameRules, RangeCategory} from "./tcs/gameRules.ts";
+import {TableModifier} from "./tcs/state.ts";
+import {remainingSteps, UnitDef, unitStats} from "./tcs/unit.ts";
 import {unitUrl} from "./units.tsx";
 import {parseRange} from "./parseRange.tsx";
 import {BackButton} from "./switchSidesButton.tsx";
 
-type Fire = ReturnType<typeof fireResolution>;
-type SectionProps = { state: State, fire: Fire };
+type SectionProps<F extends Fire = Fire> = { state: State, fire: F, rules: GameRules };
 
 // look & feel of the TCS player aid sheets
 const yellow = '#fff36b';
@@ -92,7 +98,7 @@ function Scroll(props: PropsWithChildren) {
   return <div ref={ref} style={{overflowX: 'auto'}}>{props.children}</div>;
 }
 
-function ModifierList(props: { modifiers: { value: number, description: string, applies: boolean }[] }) {
+function ModifierList(props: { modifiers: TableModifier[] }) {
   return <table style={table}>
     <tbody>{props.modifiers.map((it, idx) =>
       <tr style={{opacity: it.applies ? 1 : 0.45, fontWeight: it.applies ? 'bold' : undefined}}>
@@ -103,28 +109,40 @@ function ModifierList(props: { modifiers: { value: number, description: string, 
   </table>;
 }
 
-function FireStrength({state, fire}: SectionProps) {
-  const firers = state.attacker.units.map(def => ({def, stats: unitStats(def)}));
-  return <Box title="Fire Strength">
+function firingStats(fire: Fire) {
+  return activeFirers(fire.firers).map(it => it.stats);
+}
+
+function Firers({fire, rules}: SectionProps) {
+  const area = fire.type === 'area';
+  return <Box title={area ? 'Fire Strength' : 'P-Fire Steps'}>
     <table style={table}>
       <thead>
-      <tr><th style={th}>Firer</th><th style={th}>Fire type</th><th style={th}>Strength</th></tr>
+      <tr><th style={th}>Firer</th><th style={th}>{area ? 'Strength' : 'Steps'}</th><th style={th}/></tr>
       </thead>
-      <tbody>{firers.map(({def, stats}, idx) => {
-        const area = stats.firerType === 'area';
-        return <tr style={{opacity: area ? 1 : 0.45}}>
-          <td style={{...td, ...cellBg(idx, area)}}><UnitImg def={def}/></td>
-          <td style={{...td, ...cellBg(idx, area)}}>{area ? 'Area' : 'Point (ignored)'}</td>
-          <td style={{...td, ...cellBg(idx, area), fontWeight: area ? 'bold' : undefined}}>{stats.fireStrength}</td>
+      <tbody>{fire.firers.map(({unit, stats, steps, restriction}, idx) => {
+        const firing = restriction === undefined;
+        return <tr style={{opacity: firing ? 1 : 0.45}}>
+          <td style={{...td, ...cellBg(idx, firing)}}><UnitImg def={unit.def}/></td>
+          <td style={{...td, ...cellBg(idx, firing), fontWeight: firing ? 'bold' : undefined}}>
+            {area ? rules.areaFireStrength(stats, steps) : steps}
+          </td>
+          <td style={{...td, ...cellBg(idx, firing), whiteSpace: 'normal', textAlign: 'left', fontSize: 10}}>
+            {restriction ?? (area && stats.firerType === 'point' ? 'P-firer [11.1d]' : '')}
+          </td>
         </tr>;
       })}</tbody>
     </table>
-    {firers.length === 0 && <p style={note}>No firing units selected.</p>}
-    <Result>Area Fire Strength: <b>{fire.firepower}</b></Result>
+    {fire.firers.length === 0 && <p style={note}>No firing units selected.</p>}
+    <Result>
+      {fire.type === 'area'
+        ? <>Area Fire Strength: <b>{fire.firepower}</b></>
+        : <>P-Fire steps: <b>{fire.pSteps}</b></>}
+    </Result>
   </Box>;
 }
 
-function InfFirepower({state, fire}: SectionProps) {
+function InfFirepower({state, fire}: SectionProps<AreaFire>) {
   const rows = [
     {range: 0, label: '# Inf steps'},
     {range: 1, label: '1/2 Inf steps'},
@@ -149,15 +167,11 @@ function InfFirepower({state, fire}: SectionProps) {
   </Box>;
 }
 
-const spottingColumns = [
-  {range: 0}, {range: 1}, {range: 2},
-  {range: 3, label: 'A-target'},
-  {range: 4, label: 'AT, IG, AA, Arty'},
-  {range: 6},
-  {range: 8, label: 'Point'},
-  {range: 12},
-  {range: Infinity, label: 'unlimited'},
-];
+const spottingLabels: Record<number, string> = {
+  3: 'A-target, AT',
+  4: 'IG, AA, Arty',
+  8: 'Vehicle, Carrier',
+};
 
 function Spotting({state, fire}: SectionProps) {
   const rangeLabel = (range: number) => isFinite(range) ? String(range) : 'unlimited';
@@ -165,35 +179,41 @@ function Spotting({state, fire}: SectionProps) {
     <Scroll>
       <table style={table}>
         <tbody>
-        <tr>{spottingColumns.map((col, idx) => {
-          const isSelected = col.range === fire.spottingRange;
-          return <td style={{...td, ...cellBg(idx, isSelected), ...(isSelected ? resolved : {}), verticalAlign: 'top'}}>
-            <div style={{fontWeight: 'bold', fontFamily: 'Arial, sans-serif'}}>
-              {isFinite(col.range) ? col.range : ''}
-            </div>
-            <div style={{fontSize: 10, whiteSpace: 'normal'}}>{col.label}</div>
+        <tr>{spottingColumns.map((range, idx) => {
+          const isSelected = range === fire.spotting.range;
+          return <td style={{
+            ...td,
+            ...cellBg(idx, isSelected),
+            ...(isSelected ? resolved : {}),
+            verticalAlign: 'top',
+            ...(range === fire.spotting.base && !isSelected ? {outline: '1px dashed black', outlineOffset: '-2px'} : {}),
+          }} data-focus={isSelected || undefined}>
+            <div style={{fontWeight: 'bold', fontFamily: 'Arial, sans-serif'}}>{rangeLabel(range)}</div>
+            <div style={{fontSize: 10, whiteSpace: 'normal'}}>{spottingLabels[range]}</div>
           </td>;
         })}</tr>
         </tbody>
       </table>
     </Scroll>
     <table style={{...table, marginTop: '1mm'}}>
-      <tbody>{state.defender.units.map((def, idx) =>
+      <tbody>{state.defender.units.filter(unit => remainingSteps(unit) > 0).map((unit, idx) =>
         <tr>
-          <td style={{...td, ...cellBg(idx, false)}}><UnitImg def={def}/></td>
-          <td style={{...td, ...cellBg(idx, false)}}>{rangeLabel(unitSpottingRange(def))}</td>
+          <td style={{...td, ...cellBg(idx, false)}}><UnitImg def={unit.def}/></td>
+          <td style={{...td, ...cellBg(idx, false)}}>{baseSpottingRange(unitStats(unit.def))}</td>
         </tr>
       )}</tbody>
     </table>
+    <p style={note}>Use the unit producing the LONGEST Spotting Range [7.1e]. Shifts:</p>
+    <ModifierList modifiers={fire.spotting.shifts}/>
     <Result>
-      Range {state.distance} {fire.spotted ? '≤' : '>'} {rangeLabel(fire.spottingRange)}:{' '}
+      Range {state.distance} {fire.spotted ? '≤' : '>'} {rangeLabel(fire.spotting.range)}:{' '}
       <b>{fire.spotted ? 'Spotted' : 'Unspotted'}</b>
       {fire.noLOS && <> — <b style={{color: '#c00'}}>No LOS</b></>}
     </Result>
   </Box>;
 }
 
-function AreaTargetStacking({fire}: SectionProps) {
+function AreaTargetStacking({fire}: SectionProps<AreaFire>) {
   const rows = Object.entries(areaTargetStackingModifiers);
   const contains = (key: string) => {
     const {from, to} = parseRange(key);
@@ -215,9 +235,9 @@ function AreaTargetStacking({fire}: SectionProps) {
         </tr>;
       })}</tbody>
     </table>
-    <p style={note}>Target steps: {fire.targetSteps}</p>
+    <p style={note}>Target steps: {fire.targetSteps} (excluding Point targets and immune B-1 targets)</p>
     {raw !== undefined && raw < 0 && fire.areaTargetStacking === 0 &&
-      <p style={note}>*Applies only to artillery or unspotted SFAs that include any Low-Trajectory firers.</p>}
+      <p style={note}>*Applies only to unspotted SFAs that include any Low-Trajectory firers.</p>}
     <Result>Shift: <b>{signed(fire.areaTargetStacking)}</b></Result>
   </Box>;
 }
@@ -229,12 +249,9 @@ const areaFireRangeRows = [
   ['mrt', 'Mortar'],
 ] as const;
 
-function AreaFireRange({state, fire}: SectionProps) {
+function AreaFireRange({state, fire}: SectionProps<AreaFire>) {
   const columns = Object.entries(areaFireRangeModifiers);
-  const usedRows = new Set(state.attacker.units
-    .map(unitStats)
-    .filter(stats => stats.firerType === 'area')
-    .map(rowOf));
+  const usedRows = new Set(firingStats(fire).map(rowOf));
   const contains = (key: string) => {
     const {from, to} = parseRange(key);
     return from <= state.distance && state.distance <= to;
@@ -263,8 +280,65 @@ function AreaFireRange({state, fire}: SectionProps) {
         })}</tbody>
       </table>
     </Scroll>
-    <p style={note}>Does not apply to Artillery or Sortie. Apply the one that most favors the defender.</p>
+    <p style={note}>Apply the one that most favors the defender.</p>
     <Result>Shift: <b>{signed(fire.areaFireRange)}</b></Result>
+  </Box>;
+}
+
+const rangeCategories: [RangeCategory, string][] = [
+  ['close', 'Close'],
+  ['nominal', 'Nominal'],
+  ['long', 'Long'],
+];
+
+function PointFireRange({state, fire, rules}: SectionProps<PointFire>) {
+  const used = new Set(firingStats(fire).map(unit => rules.pointFireRange(unit, state.distance)));
+  return <Box title="Point Fire Range">
+    <table style={table}>
+      <thead>
+      <tr><th style={th}>Range</th><th style={th}>Modifier</th></tr>
+      </thead>
+      <tbody>{rangeCategories.map(([category, label], idx) => {
+        const value = pointFireRangeModifiers[category];
+        const isUsed = used.has(category);
+        return <tr style={{fontWeight: isUsed ? 'bold' : undefined}}>
+          <td style={{...td, ...cellBg(idx, isUsed)}}>{label}</td>
+          <td style={{...td, ...cellBg(idx, isUsed), ...(isUsed && value === fire.pointFireRange ? resolved : {})}}>
+            {signed(value)}
+          </td>
+        </tr>;
+      })}</tbody>
+    </table>
+    <p style={note}>
+      Close: up to ½ printed range (rounded up), Nominal: up to printed range, Long: up to twice the printed range.
+      Apply the one that favors the defender most.
+    </p>
+    <Result>Shift: <b>{signed(fire.pointFireRange)}</b></Result>
+  </Box>;
+}
+
+function Differential({fire}: SectionProps<PointFire>) {
+  const {differential} = fire;
+  const row = differentialRow(differential.value);
+  return <Box title="Differential">
+    <table style={table}>
+      <thead>
+      <tr><th style={th}>Differential</th><th style={th}>Modifier</th></tr>
+      </thead>
+      <tbody>{differentialModifiers.map(([label, value], idx) =>
+        <tr>
+          <td style={{...td, ...cellBg(idx, idx === row)}}>{label}</td>
+          <td style={{...td, ...cellBg(idx, idx === row), ...(idx === row ? resolved : {})}}>
+            {value === undefined ? 'not allowed' : signed(value)}
+          </td>
+        </tr>
+      )}</tbody>
+    </table>
+    <p style={note}>
+      Lowest P-Fire strength {differential.firerStrength} minus best P-defense {differential.targetDefense}
+      {' '}= {signed(differential.value)}
+    </p>
+    <Result>Shift: <b>{differential.shift === undefined ? 'not allowed' : signed(differential.shift)}</b></Result>
   </Box>;
 }
 
@@ -283,8 +357,8 @@ const postureColumns = [
 function TargetTerrainPosture({state, fire}: SectionProps) {
   const terrainRow = rowByTerrainType[state.terrain.type];
   const activePostures = postures(state.defender);
-  const spottedValues = fire.spotted || !includesLowTrajectory(state);
-  const hasAreaTargets = state.defender.units.some(def => unitStats(def).targetType !== 'point');
+  const spottedValues = fire.type === 'point' || fire.spotted || !includesLowTrajectory(firingStats(fire));
+  const hasTargets = fire.targetSteps > 0;
   return <Box title="Target Terrain / Posture">
     <table style={table}>
       <thead>
@@ -304,7 +378,7 @@ function TargetTerrainPosture({state, fire}: SectionProps) {
             return <td style={{
               ...td,
               ...cellBg(idx, rowSelected || activePostures.includes(posture)),
-              ...(isSelected && hasAreaTargets ? resolved : {}),
+              ...(isSelected && hasTargets ? resolved : {}),
             }}>
               <span style={{opacity: spottedValues ? 1 : 0.5}}>{signed(spottedTable[row][col])}{vehicleNote}</span>
               {' '}
@@ -321,37 +395,52 @@ function TargetTerrainPosture({state, fire}: SectionProps) {
       Terrain: {state.terrain.name} ({state.terrain.type}).
       If more than one posture, apply the one that least favors the defender.
     </p>
-    {!hasAreaTargets && <p style={note}>No Area targets in the hex.</p>}
+    {!hasTargets && <p style={note}>No targets in the hex.</p>}
     <Result>Shift: <b>{signed(fire.targetTerrainPosture)}</b></Result>
   </Box>;
 }
 
 function OtherModifiers({state, fire}: SectionProps) {
   return <Box title="Other Modifiers">
-    <ModifierList modifiers={otherModifiersCandidates(state.attacker, state.defender, state.distance)}/>
+    <ModifierList modifiers={otherModifiersCandidates(state, firingStats(fire))}/>
     <p style={note}>
-      Night, Illuminated/Twilight and Smoke do not apply to Artillery.
       All Suppressed/Paralyzed not at range 0. P-2+ target in hex: Low-Trajectory Area Fire only (tank cover).
     </p>
     <Result>Shift: <b>{signed(fire.otherModifiers.total)}</b></Result>
   </Box>;
 }
 
+function shiftsOf(fire: Fire): [string, number][] {
+  if (fire.type === 'area') {
+    return [
+      ['Area Target Stacking', fire.areaTargetStacking],
+      ['Area Fire Range', fire.areaFireRange],
+      ['Target Terrain / Posture', fire.targetTerrainPosture],
+      ['Other Modifiers', fire.otherModifiers.total],
+    ];
+  }
+  return [
+    ['Target Terrain / Posture', fire.targetTerrainPosture],
+    ['Point Fire Range', fire.pointFireRange],
+    ['Differential', fire.differential.shift ?? 0],
+    ['Other Modifiers', fire.otherModifiers.total],
+  ];
+}
+
 function FireTable({fire, dice}: SectionProps & { dice: number }) {
   const input = fireTableInput(fire);
+  if (input === undefined) {
+    return <Box title="Fire Table" yellowTitle style={full}>
+      <Result><b style={{color: '#c00'}}>{fire.restriction}</b></Result>
+    </Box>;
+  }
   const rawColumn = fireTable.column({...input, shift: 0});
   const column = fireTable.column(input);
   const result = fireTable.result(input, dice);
-  const shifts = [
-    ['Area Target Stacking', fire.areaTargetStacking],
-    ['Area Fire Range', fire.areaFireRange],
-    ['Target Terrain / Posture', fire.targetTerrainPosture],
-    ['Other Modifiers', fire.otherModifiers.total],
-  ] as const;
   return <Box title="Fire Table" yellowTitle style={full}>
     <table style={{...table, width: 'auto'}}>
       <tbody>
-      {shifts.map(([label, value], idx) =>
+      {shiftsOf(fire).map(([label, value], idx) =>
         <tr>
           <td style={{...td, ...cellBg(idx, false), textAlign: 'left'}}>{label}</td>
           <td style={{...td, ...cellBg(idx, false)}}>{signed(value)}</td>
@@ -365,16 +454,18 @@ function FireTable({fire, dice}: SectionProps & { dice: number }) {
     <Scroll>
       <table style={{...table, marginTop: '1mm'}}>
         <thead>
-        <tr>
-          <th style={{...th, ...sticky, background: yellow}}>A-Fire</th>
-          {rawColumns.map((label, idx) => <th style={{
-            ...th,
-            ...cellBg(0, idx === column.index),
-            fontWeight: idx === column.index ? 'bold' : 'normal',
-            outline: idx === rawColumn.index ? '1px dashed black' : undefined,
-            outlineOffset: '-2px',
-          }} data-focus={idx === column.index || undefined}>{label}</th>)}
-        </tr>
+        {([['A-Fire', rawColumns], ['P-Fire', pColumnLabels]] as const).map(([label, labels]) =>
+          <tr>
+            <th style={{...th, ...sticky, background: yellow}}>{label}</th>
+            {labels.map((it, idx) => <th style={{
+              ...th,
+              ...cellBg(0, idx === column.index),
+              fontWeight: idx === column.index ? 'bold' : 'normal',
+              outline: idx === rawColumn.index ? '1px dashed black' : undefined,
+              outlineOffset: '-2px',
+            }} data-focus={(label === 'A-Fire' && idx === column.index) || undefined}>{it ?? ''}</th>)}
+          </tr>
+        )}
         </thead>
         <tbody>{firetable.map(([label, ...cells], rowIdx) =>
           <tr>
@@ -392,29 +483,40 @@ function FireTable({fire, dice}: SectionProps & { dice: number }) {
       </table>
     </Scroll>
     <p style={note}>
-      <b>For Area Fires:</b> Total Area Fire Strength Points.
-      All results other than No Effect require a <b>Morale Check</b>.
+      {fire.type === 'area'
+        ? <><b>For Area Fires:</b> Total Area Fire Strength Points.
+          All results other than No Effect require a <b>Morale Check</b>.</>
+        : <><b>For Point Fires:</b> Total Point Fire STEPS, not Strength Points.
+          The number is the number of targets destroyed (target steps: {fire.targetSteps}).</>}
     </p>
     <Result>
-      Strength {input.firepower} → column {rawColumn.label}, shift {signed(input.shift)} →
-      column <b>{column.label}</b>; roll {dice > 0 ? dice : '–'}: <b>{dice > 0 ? result : '–'}</b>
+      {'firepower' in input ? `Strength ${input.firepower}` : `P-steps ${input.pSteps}`} → column {rawColumn.label},
+      shift {signed(input.shift)} → column <b>{column.label}</b>; roll {dice > 0 ? dice : '–'}:{' '}
+      <b>{dice > 0 ? result : '–'}</b>
     </Result>
   </Box>;
 }
 
-function MoraleTable({state, dice, bnMorale, fireResult}: SectionProps & {
-  dice: number,
-  bnMorale: number,
-  fireResult: string
-}) {
-  const breakdown = moraleBreakdown(state, bnMorale);
+function MoraleTable({state, fire, rules, dice}: SectionProps & { dice: number }) {
+  const input = fireTableInput(fire);
+  if (input === undefined) {
+    return null;
+  }
+  if (!fire.moraleCheck) {
+    return <Box title="Morale Table" yellowTitle style={full}>
+      <p style={note}>Point Fires never cause Morale Checks [12.2f].</p>
+    </Box>;
+  }
+  const fireResult = dice > 0 ? fireTable.result(input, dice) : undefined;
+  const newLosses = fireResult === undefined ? 0 : fireResultLosses(fireResult);
+  const breakdown = moraleBreakdown(state, firingStats(fire), rules, newLosses ?? 0);
   if (breakdown === undefined) {
     return <Box title="Morale Table" yellowTitle style={full}>
       <p style={note}>No unit in the target hex checks Morale (Vehicles and Carriers never do).</p>
     </Box>;
   }
   const mods = R.sumBy(breakdown.modifiers.filter(it => it.applies), it => it.value);
-  const moraleResult = morale(breakdown.total, dice);
+  const column = R.clamp(breakdown.total, {min: 1, max: 13});
   const header = (idx: number) => idx === 1 ? '1 or less' : idx === 13 ? '13+' : String(idx);
   return <>
     <Box title="Morale Modifiers">
@@ -425,6 +527,12 @@ function MoraleTable({state, dice, bnMorale, fireResult}: SectionProps & {
         <b>Morale</b> (= Unit Morale {breakdown.unitMorale} + Step Losses {breakdown.stepLosses}
         {' '}+ Bn Morale {breakdown.bnMorale} + Mods {signed(mods)}) = <b>{breakdown.total}</b>
       </Result>
+      <p style={note}>
+        {fireResult === undefined
+          ? 'Step losses before the fire. Roll the fire to include its losses.'
+          : `Step losses include the fire result (${fireResult}), assigned as in 10.0f.`}
+        {' '}The unit with the worst Morale checks for the stack [17.2a].
+      </p>
       <Scroll>
         <table style={{...table, marginTop: '1mm'}}>
           <thead>
@@ -432,22 +540,18 @@ function MoraleTable({state, dice, bnMorale, fireResult}: SectionProps & {
             <th style={{...th, ...sticky}}>Result</th>
             {R.range(1, 14).map(idx => <th style={{
               ...th,
-              ...(idx === moraleResult.column ? cellBg(1, true) : {}),
-              fontWeight: idx === moraleResult.column ? 'bold' : 'normal',
-            }} data-focus={idx === moraleResult.column || undefined}>{header(idx)}</th>)}
+              ...(idx === column ? cellBg(1, true) : {}),
+              fontWeight: idx === column ? 'bold' : 'normal',
+            }} data-focus={idx === column || undefined}>{header(idx)}</th>)}
           </tr>
           </thead>
           <tbody>{moraleTable.map(([label, ...cells], rowIdx) =>
             <tr>
               <td style={{...td, ...sticky}}>{label}</td>
-              {R.range(1, 14).map(idx => {
-                const isResolved = idx === moraleResult.column && label === moraleResult.result;
-                return <td style={{
-                  ...td,
-                  ...cellBg(rowIdx, idx === moraleResult.column),
-                  ...(isResolved ? resolved : {}),
-                }}>{cells[idx - 1] ?? ''}</td>;
-              })}
+              {R.range(1, 14).map(idx => <td style={{
+                ...td,
+                ...cellBg(rowIdx, idx === column),
+              }}>{cells[idx - 1] ?? ''}</td>)}
             </tr>
           )}</tbody>
         </table>
@@ -455,18 +559,25 @@ function MoraleTable({state, dice, bnMorale, fireResult}: SectionProps & {
       <Result>
         {fireResult === 'No Effect'
           ? <>Fire result is No Effect — no Morale Check needed.</>
-          : <>Column <b>{header(moraleResult.column)}</b>; roll {dice > 0 ? dice : '–'}:{' '}
-            <b>{moraleResult.result ?? '–'}</b></>}
+          : <>Roll two dice on column <b>{header(column)}</b>.</>}
       </Result>
     </Box>
   </>;
 }
 
-export function FireExplanation(props: { dice: number, bnMorale: number, onBack(): void }) {
+function Notes({fire}: SectionProps) {
+  if (fire.notes.length === 0) {
+    return null;
+  }
+  return <Box title="Game Rules" style={full}>
+    {fire.notes.map(it => <p style={note}>{it}</p>)}
+  </Box>;
+}
+
+export function FireExplanation(props: { dice: number, rules: GameRules, onBack(): void }) {
   const {state} = useContext(Context);
-  const fire = fireResolution(state);
-  const fireResult = fireTable.result(fireTableInput(fire), props.dice);
-  const sectionProps = {state, fire};
+  const fire = fireResolution(state, props.rules);
+  const sectionProps = {state, fire, rules: props.rules};
   return <div style={{position: 'absolute', inset: 0, overflowY: 'auto', background: 'white'}}>
     <div style={{
       maxWidth: '16cm',
@@ -487,26 +598,24 @@ export function FireExplanation(props: { dice: number, bnMorale: number, onBack(
         padding: '1mm 2mm',
       }}>
         <h1 style={{margin: 0, fontFamily: display, fontWeight: 900, textTransform: 'uppercase', fontSize: 22}}>
-          Fire Resolution
+          {fire.type === 'area' ? 'Area Fire' : 'Point Fire'}
         </h1>
         <span style={{fontFamily: serif, fontVariant: 'small-caps', fontWeight: 'bold', fontSize: 14}}>
           Tactical Combat Series
         </span>
       </header>
-      <FireStrength {...sectionProps}/>
-      <InfFirepower {...sectionProps}/>
+      <Firers {...sectionProps}/>
+      {fire.type === 'area' && <InfFirepower {...sectionProps} fire={fire}/>}
       <Spotting {...sectionProps}/>
-      <AreaTargetStacking {...sectionProps}/>
-      <AreaFireRange {...sectionProps}/>
+      {fire.type === 'area' && <AreaTargetStacking {...sectionProps} fire={fire}/>}
+      {fire.type === 'area' && <AreaFireRange {...sectionProps} fire={fire}/>}
+      {fire.type === 'point' && <PointFireRange {...sectionProps} fire={fire}/>}
+      {fire.type === 'point' && <Differential {...sectionProps} fire={fire}/>}
       <TargetTerrainPosture {...sectionProps}/>
       <OtherModifiers {...sectionProps}/>
+      <Notes {...sectionProps}/>
       <FireTable {...sectionProps} dice={props.dice}/>
-      <MoraleTable {...sectionProps} dice={props.dice} bnMorale={props.bnMorale} fireResult={fireResult}/>
-      <pre>
-        {JSON.stringify(state, null, 2)}
-        {JSON.stringify(fire, null, 2)}
-        {JSON.stringify(fireResult, null, 2)}
-      </pre>
+      <MoraleTable {...sectionProps} dice={props.dice}/>
     </div>
     <div style={{position: 'fixed', right: '2mm', bottom: '2mm'}}>
       <BackButton onClick={props.onBack}/>

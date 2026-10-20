@@ -1,8 +1,9 @@
 import {useContext} from "preact/compat";
 import {Context} from "./context.tsx";
-import {SideState} from "./state.ts";
+import {SideState} from "./tcs/state.ts";
+import {Role} from "./state.ts";
 
-export function useSide(side: 'attacker' | 'defender') {
+export function useSide(side: Role) {
   const {state, update} = useContext(Context);
   const updateSide = <K extends keyof SideState>(key: K) =>
     (fn: (prev: SideState[K]) => SideState[K]) =>

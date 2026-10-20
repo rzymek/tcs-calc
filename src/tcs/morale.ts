@@ -1,4 +1,4 @@
-import {inRange} from "./inRange.ts";
+import {inRange} from "../inRange.ts";
 
 export const moraleTable: string[][] = [
     ['No Effect', '11..53', '11..46', '11..41', '11..33', '11..25', '11..21', '11..14', '11'],

@@ -1,11 +1,32 @@
 import {size} from "./size.tsx";
+import {FireType} from "./tcs/state.ts";
 
-export function SwitchSidesButton() {
+export function SwitchSidesButton(props: { onClick(): void }) {
   return <button style={{
     width: `${size}mm`,
     height: `${size}mm`
-  }}>
+  }} onClick={props.onClick}>
     🔄
+  </button>;
+}
+
+export function FireTypeButton(props: { fireType: FireType, onClick(): void }) {
+  return <button style={{
+    width: `${size}mm`,
+    height: `${size}mm`,
+    padding: 0,
+  }} onClick={props.onClick}>
+    {props.fireType === 'area' ? 'Area' : 'Point'}
+  </button>;
+}
+
+export function BnMoraleButton(props: { value: number, onClick(): void }) {
+  return <button style={{
+    width: `${size}mm`,
+    height: `${size}mm`,
+    padding: 0,
+  }} title="Target Battalion Morale" onClick={props.onClick}>
+    Bn {props.value}
   </button>;
 }
 

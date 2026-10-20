@@ -1,7 +1,4 @@
-export interface Terrain {
-  name: string;
-  type: string;
-}
+import {Terrain} from "./tcs/state.ts";
 
 export function terrainFromImgName(img: string): Terrain {
   const match = decodeURIComponent(img).match(/\d+_(.+)-(.+)\.png$/);

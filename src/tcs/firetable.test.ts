@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
-import {fireTable, firetable, rawColumns} from "./firetable.ts";
-import {inRange} from "./inRange.ts";
+import {fireResultLosses, fireTable, firetable, pColumnLabels, rawColumns} from "./firetable.ts";
+import {inRange} from "../inRange.ts";
+import {rolls2d6} from "./dice.ts";
 
 describe('firetable', () => {
     it.skip('csv', async () => {
@@ -51,10 +52,9 @@ describe('firetable', () => {
         expect(fireTable.result({firepower: 101, shift: 0}, 23)).toBe('-3 steps');
         expect(fireTable.result({firepower: 101, shift: 0}, 66)).toBe('-9 steps');
     })
-    it('every roll maps to exactly one result in every column', () => {
-        const rolls = [1, 2, 3, 4, 5, 6].flatMap(tens => [1, 2, 3, 4, 5, 6].map(units => tens * 10 + units));
+    it('every roll maps to at most one result in every column', () => {
         rawColumns.forEach((column, idx) => {
-            rolls.forEach(roll => {
+            rolls2d6.forEach(roll => {
                 const matching = firetable.filter(([, ...cells]) => inRange(cells[idx], roll));
                 // empty cells at the low end of a column mean No Effect
                 expect(matching.length, `column ${column}, roll ${roll}`).toBeLessThanOrEqual(1);
@@ -62,3 +62,38 @@ describe('firetable', () => {
         });
     })
 })
+
+describe('Point Fire columns', () => {
+    it.each([
+        {pSteps: 1, expected: '4'},
+        {pSteps: 2, expected: '7-8'},
+        {pSteps: 7, expected: '26-32'},
+        {pSteps: 8, expected: '26-32'},
+        {pSteps: 12, expected: '41-50'},
+        {pSteps: 30, expected: '101+'},
+    ])('$pSteps P-steps: column $expected', ({pSteps, expected}) => {
+        expect(fireTable.column({pSteps, shift: 0}).label).toBe(expected);
+    });
+    it('shifts use all columns [12.2g]', () => {
+        expect(fireTable.column({pSteps: 1, shift: 2}).label).toBe('6');
+        expect(fireTable.column({pSteps: 1, shift: -2}).label).toBe('2');
+    });
+    it('no P-steps: no effect', () => {
+        expect(fireTable.column({pSteps: 0, shift: 5}).index).toBe(-1);
+    });
+    it('labels the P-Fire row', () => {
+        expect(pColumnLabels.slice(0, 8)).toEqual([undefined, undefined, undefined, undefined, 1, undefined, undefined, 2]);
+        expect(pColumnLabels[pColumnLabels.length - 1]).toBe('26+');
+    });
+});
+
+describe('fireResultLosses', () => {
+    it.each([
+        {result: 'No Effect', expected: undefined},
+        {result: 'Morale Check', expected: 0},
+        {result: '-1 step', expected: 1},
+        {result: '-9 steps', expected: 9},
+    ] as const)('$result: $expected', ({result, expected}) => {
+        expect(fireResultLosses(result)).toBe(expected);
+    });
+});

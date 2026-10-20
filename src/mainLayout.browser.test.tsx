@@ -63,4 +63,28 @@ describe('MainLayout screenshots', () => {
     await page.getByRole('button', {name: '📝'}).click();
     await screenshot('info-view');
   });
+
+  it('step losses', async () => {
+    await selectUnits();
+    // the last added unit is selected
+    await page.getByAltText('2', {exact: true}).last().click();
+    await screenshot('step-losses');
+  });
+
+  it('point fire', async () => {
+    await page.getByAltText('14y.9b.0b.2.milan', {exact: true}).first().click();
+    await page.getByAltText('5y.10b.0b.2.at', {exact: true}).first().click();
+    await page.getByRole('button', {name: 'Area'}).click();
+    await page.getByRole('button', {name: '3', exact: true}).click();
+    await rollDice();
+    await screenshot('point-fire');
+    await page.getByRole('button', {name: '📝'}).click();
+    await screenshot('point-fire-info');
+  });
+
+  it('switch sides', async () => {
+    await selectUnits();
+    await page.getByRole('button', {name: '🔄'}).click();
+    await screenshot('switched-sides');
+  });
 });

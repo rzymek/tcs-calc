@@ -1,5 +1,5 @@
 import {Branded} from "branded-types";
-import {panic} from "./panic.tsx";
+import {panic} from "../panic.tsx";
 
 export class UnitDef extends Branded<string, 'UnitDef'>() {
 }
@@ -26,6 +26,18 @@ export type UnitStats = {
   targetType: 'point' | 'both',
   defenseStrength: number,
 })
+
+/** a unit in a hex, with the step losses marked under it [10.0d] */
+export type UnitState = {
+  def: UnitDef,
+  losses: number,
+}
+
+export type Counter = {
+  unit: UnitState,
+  stats: UnitStats,
+  steps: number,
+}
 
 const infantrySteps = 5;
 
@@ -86,4 +98,13 @@ export function unitStats(unit: UnitDef): UnitStats {
       defenseStrength: defence.value
     }
   }
+}
+
+/** step losses do not exceed the number of steps of the unit [10.0e] */
+export function remainingSteps(unit: UnitState): number {
+  return Math.max(0, unitStats(unit.def).steps - unit.losses);
+}
+
+export function counter(unit: UnitState): Counter {
+  return {unit, stats: unitStats(unit.def), steps: remainingSteps(unit)};
 }

@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import * as R from "remeda";
 import {distribution} from "./outcomeProbabilities.tsx";
-import {fireTable} from "./firetable.ts";
+import {fireTable} from "./tcs/firetable.ts";
 
 describe('distribution', () => {
   it('counts outcomes over all 36 rolls', () => {

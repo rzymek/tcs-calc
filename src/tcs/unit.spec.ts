@@ -1,5 +1,6 @@
 import {describe, expect, it} from "vitest";
-import {UnitDef, unitName, UnitStats, unitStats} from "./unitName.tsx";
+import {remainingSteps, UnitDef, unitName, UnitStats, unitStats} from "./unit.ts";
+import {unit} from "./fixtures.ts";
 
 describe('unitName', () => {
   it('strips directory, numeric prefix and extension', () => {
@@ -64,4 +65,11 @@ describe('unitStats', () => {
   })
 });
 
-
+describe('remainingSteps', () => {
+  it('subtracts the step losses of the unit', () => {
+    expect(remainingSteps(unit('4w.5b.5w', 2))).toBe(3);
+  });
+  it('never drops below zero [10.0e]', () => {
+    expect(remainingSteps(unit('4w.5b.5w', 7))).toBe(0);
+  });
+});

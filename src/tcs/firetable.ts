@@ -1,5 +1,5 @@
 import {isString} from "remeda";
-import {inRange} from "./inRange.ts";
+import {inRange} from "../inRange.ts";
 
 export const rawColumns = [
   0, 1, 2, 3, 4, 5, 6, '7-8', '9-10', '11-13', '14-16', '17-20', '21-25', '26-32', '33-40', '41-50', '51-64', '65-80', '81-100', '101+'
@@ -20,6 +20,9 @@ const pColumns = [
   ['26+', '101+'],
 ] as const;
 
+/** P-Fire steps printed under each A-Fire column */
+export const pColumnLabels = rawColumns.map(column => pColumns.find(([, aColumn]) => aColumn === column)?.[0]);
+
 export const firetable = [
   ['No Effect', '11..53', '11..51', '11..45', '11..43', '11..41', '11..35', '11..33', '11..26', '11..24', '11..22', '11..16', '11..14', '11..12'],
   ['Morale Check', '54..65', '52..63', '46..62', '44..61', '42..56', '36..54', '34..53', '31..51', '25..51', '23..45', '21..41', '15..35', '13..26', '11..23', '11..16', '11..14', '11..13'],
@@ -33,6 +36,8 @@ export const firetable = [
   ['-8 steps', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '66', '66', '65', '64..65'],
   ['-9 steps', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '66', '66'],
 ] as const;
+
+export type FireResult = typeof firetable[number][0];
 
 function isInRangePredicate(v: number) {
   return (range: number | string) => {
@@ -48,6 +53,7 @@ function isInRangePredicate(v: number) {
     }
   };
 }
+
 export type FiretableInput = { shift: number } & ({ firepower: number } | { pSteps: number });
 export const fireTable = {
   column(resolution: FiretableInput) {
@@ -56,7 +62,7 @@ export const fireTable = {
       : pColumn(resolution.pSteps);
     return effectiveColumn(colIndex, resolution.shift);
   },
-  result(resolution: FiretableInput, roll: number) {
+  result(resolution: FiretableInput, roll: number): FireResult {
     const col = this.column(resolution);
     if (col.index < 0) {
       return firetable[0][0];
@@ -66,13 +72,30 @@ export const fireTable = {
   },
 }
 
+/** step losses of a Fire Table result; undefined if no Morale Check is required */
+export function fireResultLosses(result: FireResult): number | undefined {
+  if (result === 'No Effect') {
+    return undefined;
+  }
+  if (result === 'Morale Check') {
+    return 0;
+  }
+  return parseInt(result.slice(1));
+}
+
 function areaColumn(firepower: number) {
   return rawColumns.findIndex(isInRangePredicate(firepower));
 }
 
+// 12.2g Point Fire column shifts use all columns on the Fire Table
+function pColumn(pSteps: number) {
+  const entry = pColumns.find(([steps]) => isInRangePredicate(pSteps)(steps));
+  return entry === undefined ? -1 : rawColumns.indexOf(entry[1]);
+}
+
 function effectiveColumn(index: number, shift: number) {
   const effectiveIndex = Math.min(index + shift, rawColumns.length - 1)
-  if (effectiveIndex < 0) {
+  if (index < 0 || effectiveIndex < 0) {
     // shifted off the left side of the table: No Effect
     return {index: -1, label: 'left of 0'};
   }

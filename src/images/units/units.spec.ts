@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {unitName, unitStats, UnitStats} from "../../unitName.tsx";
+import {unitName, unitStats, UnitStats} from "../../tcs/unit.ts";
 
 const files = Object.keys(import.meta.glob(['./Arg/*.png', './Brit/*.png']));
 

@@ -1,4 +1,4 @@
-import {InfoButton, SwitchSidesButton} from "./switchSidesButton.tsx";
+import {InfoButton} from "./switchSidesButton.tsx";
 
 export function ActionButtons(props: { onInfo(): void }) {
   return <div style={{
@@ -9,7 +9,6 @@ export function ActionButtons(props: { onInfo(): void }) {
     flexDirection: 'column',
     gap: '1mm'
   }}>
-    <SwitchSidesButton/>
     <InfoButton onClick={props.onInfo}/>
   </div>;
 }
