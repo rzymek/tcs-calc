@@ -26,8 +26,15 @@ jobs:
           sudo apt-get install -y fonts-noto-color-emoji
       - name: Update screenshots 📸
         run: pnpm test:screenshots -u
+      - name: Detect screenshot changes
+        id: diff
+        run: |
+          if [ -n "$(git status --porcelain -- src/__screenshots__)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Create screenshot-update PR
-        uses: peter-evans/create-pull-request@v7
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: screenshot-update
           add-paths: src/__screenshots__/**
@@ -35,3 +42,9 @@ jobs:
           title: "Update screenshots"
           body: "Screenshots changed after ${{ github.sha }}. Review the image diffs, merge if intended."
           delete-branch: true
+      - name: Fail on screenshot changes
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          echo "::error::Screenshots differ from the committed ones. See the 'Update screenshots' PR."
+          git status --porcelain -- src/__screenshots__
+          exit 1
