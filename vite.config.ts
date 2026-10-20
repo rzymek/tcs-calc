@@ -1,6 +1,7 @@
 import {defineConfig} from 'vitest/config'
 import preact from '@preact/preset-vite'
 import {VitePWA} from 'vite-plugin-pwa'
+import {playwright} from '@vitest/browser-playwright'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,7 +10,27 @@ export default defineConfig({
         assetsInlineLimit: 8 * 1024,
     },
     test: {
-        environment: "node",
+        projects: [{
+            extends: true,
+            test: {
+                name: 'unit',
+                environment: 'node',
+                include: ['src/**/*.{spec,test}.{ts,tsx}'],
+                exclude: ['src/**/*.browser.test.tsx'],
+            },
+        }, {
+            extends: true,
+            test: {
+                name: 'browser',
+                include: ['src/**/*.browser.test.tsx'],
+                browser: {
+                    enabled: true,
+                    headless: true,
+                    provider: playwright(),
+                    instances: [{browser: 'chromium', viewport: {width: 412, height: 915}}],
+                },
+            },
+        }],
     },
     plugins: [
         preact(),
