@@ -21,12 +21,14 @@ export function MainLayout() {
   return <div style={{
     position: 'absolute',
     inset: 0,
+    maxWidth: '16cm',
+    margin: '0 auto',
     display: 'grid',
     gridTemplateColumns: `1fr 1fr`,
     gridTemplateRows: `
       2fr 
-      ${size + 2}mm 
-      ${2 * (size + 2)}mm 
+      ${size + 3}mm 
+      ${2 * (size + 1) + 1}mm 
       ${size}mm 
       ${size}mm 
       1fr 

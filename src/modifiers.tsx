@@ -32,7 +32,7 @@ export function Modifiers() {
 
   const [defender, updateDefender] = useSide('defender');
   return <div style={{...wide, display: 'grid', gridTemplateColumns: `${2 * (size + 2)}mm 1fr`, overflow: 'hidden'}}>
-    <div style={{background: 'lightblue', overflow: 'auto'}}>
+    <div style={{background: 'lightblue', overflow: 'auto', gap: '1mm', padding: '1mm',display:'flex', flexWrap: 'wrap'}}>
       <ModToggles selected={attacker.mods} setSelected={updateAttacker('mods')} mods={attackerModifiers}/>
     </div>
     <div
@@ -41,6 +41,8 @@ export function Modifiers() {
         overflow: 'auto',
         display: 'flex',
         flexWrap: 'wrap',
+        gap: '1mm',
+        padding:'1mm',
         justifyContent: 'flex-end'
       }}>
       <ModToggles selected={defender.mods} setSelected={updateDefender('mods')} mods={defenderModifiers}/>

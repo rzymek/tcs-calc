@@ -23,7 +23,7 @@ export function Units(props: {
   units: UnitImages,
 }) {
   const [, update] = useSide(props.side);
-  return <div style={{...cell, background: bgColor[props.side]}}>
+  return <div style={{...cell, background: bgColor[props.side], gap: '1mm', padding:'1mm'}}>
     {Object.keys(props.units).map(unitName).map(name =>
       <img src={unitUrl(name)}
            style={{width: `${size}mm`, cursor: 'pointer'}}
