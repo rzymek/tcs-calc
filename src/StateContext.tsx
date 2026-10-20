@@ -10,8 +10,8 @@ export function StateContext({children, transition}: PropsWithChildren<{ transit
     update: useCallback((v) => {
       setState(prev => {
         const next = {
-          ...prev,
-          ...v
+        ...prev,
+        ...v
         };
         // console.log(next)
         return transition ? transition(prev, next) : next;

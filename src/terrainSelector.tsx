@@ -24,7 +24,7 @@ export function TerrainSelector() {
         <img src={url}
              style={{width: '100%', height: `${size}mm`, border: 0, display: 'block'}}
              alt={terrainValue.name}/>
-        {state.terrain?.name === terrainValue.name && <div style={{
+        {state.terrain.name === terrainValue.name && <div style={{
           position: 'absolute',
           inset: 0,
           background: 'rgba(0, 100, 255, 0.5)',

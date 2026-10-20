@@ -14,4 +14,7 @@ describe('terrainFromImgName', () => {
       type: 'partly pro',
     });
   })
+  it('rejects names not matching <nn>_<name>-<type>.png', () => {
+    expect(() => terrainFromImgName('src/images/terrain/clean.png')).toThrow('Invalid terrain image');
+  })
 });

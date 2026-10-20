@@ -18,9 +18,6 @@ importers:
         specifier: ^2.52.0
         version: 2.52.0
     devDependencies:
-      '@babel/plugin-transform-react-jsx-source':
-        specifier: ^7.29.7
-        version: 7.29.7(@babel/core@7.29.7(supports-color@5.5.0))
       '@preact/preset-vite':
         specifier: ^2.10.6
         version: 2.10.6(@babel/core@7.29.7(supports-color@5.5.0))(preact@11.0.1)(rollup@4.64.10)(supports-color@5.5.0)(vite@8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
@@ -42,9 +39,6 @@ importers:
       vite-plugin-pwa:
         specifier: ^2.0.0
         version: 2.0.0(@vite-pwa/assets-generator@2.0.0)(supports-color@5.5.0)(vite@8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(workbox-build@7.4.1(supports-color@5.5.0))(workbox-window@7.4.1)
-      vite-static-assets-plugin:
-        specifier: ^3.1.1
-        version: 3.1.1(typescript@7.0.2)(vite@8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(vite@8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
@@ -467,12 +461,6 @@ packages:
 
   '@babel/plugin-transform-react-jsx-development@7.29.7':
     resolution: {integrity: sha512-Xfy3UVMF04+ypnFbkhvfqtmvwfe92qwQdbGZVonhE+6v35GzlofmOnA1szaZqzb9xYWr0nl1e5EMmzi0DNON1g==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-
-  '@babel/plugin-transform-react-jsx-source@7.29.7':
-    resolution: {integrity: sha512-06IyK09H3wi4cGbhDBwp5gUGo0IKtnYa8tyTiephirPCK6fbobVGiXMMI5zLQ4aKEYP3wZ3ArU44o+8KMrSG/Q==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -2737,14 +2725,6 @@ packages:
     peerDependencies:
       vite: 5.x || 6.x || 7.x || 8.x
 
-  vite-static-assets-plugin@3.1.1:
-    resolution: {integrity: sha512-oiitXoWupLROfdxjUVvKz6O2WP43k+T0UIXUKOq49RLGLI05UDP76C78HMwoVpMJXNoazEc3yxePfPaRkXIvOQ==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-    hasBin: true
-    peerDependencies:
-      typescript: ^5.0.0
-      vite: ^7.0.0 || ^8.0.0
-
   vite@8.3.4:
     resolution: {integrity: sha512-IftLE8phJhdNRIGNEV4JCCvfNScoZQVfcXaN8TQropWGJtOHcu+iAB9pHcuGvmEb/kddw0LBe/jS8ztdC6xdiQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -3432,11 +3412,6 @@ snapshots:
       '@babel/plugin-transform-react-jsx': 7.29.7(@babel/core@7.29.7(supports-color@5.5.0))(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
-
-  '@babel/plugin-transform-react-jsx-source@7.29.7(@babel/core@7.29.7(supports-color@5.5.0))':
-    dependencies:
-      '@babel/core': 7.29.7(supports-color@5.5.0)
-      '@babel/helper-plugin-utils': 7.29.7
 
   '@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7(supports-color@5.5.0))(supports-color@5.5.0)':
     dependencies:
@@ -5675,12 +5650,6 @@ snapshots:
       simple-code-frame: 1.3.0
       source-map: 0.7.6
       stack-trace: 1.0.0
-      vite: 8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
-
-  vite-static-assets-plugin@3.1.1(typescript@7.0.2)(vite@8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)):
-    dependencies:
-      picomatch: 4.0.7
-      typescript: 7.0.2
       vite: 8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
 
   vite@8.3.4(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1):

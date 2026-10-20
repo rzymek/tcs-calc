@@ -1,5 +1,6 @@
 import {describe, expect, it} from "vitest";
-import {morale} from "./morale.ts";
+import {morale, moraleTable} from "./morale.ts";
+import {inRange} from "./inRange.ts";
 
 function moraleResult(moraleVal: number, roll: number) {
     return morale(moraleVal, roll).result;
@@ -23,5 +24,19 @@ describe('morale', () => {
     it('undefined', () => {
         expect(moraleResult(NaN, 11)).toBeUndefined();
         expect(moraleResult(1, NaN)).toBeUndefined();
+    })
+    it('clamps the column to 1..13', () => {
+        expect(morale(-5, 11).column).toBe(1);
+        expect(morale(7, 11).column).toBe(7);
+        expect(morale(20, 11).column).toBe(13);
+    })
+    it('every roll maps to exactly one result in every column', () => {
+        const rolls = [1, 2, 3, 4, 5, 6].flatMap(tens => [1, 2, 3, 4, 5, 6].map(units => tens * 10 + units));
+        for (let column = 1; column <= 13; column++) {
+            for (const roll of rolls) {
+                const matching = moraleTable.filter(row => inRange(row[column], roll));
+                expect(matching.length, `column ${column}, roll ${roll}`).toBe(1);
+            }
+        }
     })
 })

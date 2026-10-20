@@ -58,6 +58,9 @@ export const fireTable = {
   },
   result(resolution: FiretableInput, roll: number) {
     const col = this.column(resolution);
+    if (col.index < 0) {
+      return firetable[0][0];
+    }
     const row = firetable.find(([, ...rols]) => inRange(rols[col.index], roll)) ?? firetable[0]
     return row[0];
   },
@@ -67,14 +70,12 @@ function areaColumn(firepower: number) {
   return rawColumns.findIndex(isInRangePredicate(firepower));
 }
 
-function pColumn(firerSteps: number) {
-  const inRangePredicate = isInRangePredicate(firerSteps ?? NaN);
-  const [, aColumn] = pColumns.find(([pFireSteps]) => inRangePredicate(pFireSteps)) ?? [0, 0]
-  return rawColumns.indexOf(aColumn);
-}
-
 function effectiveColumn(index: number, shift: number) {
   const effectiveIndex = Math.min(index + shift, rawColumns.length - 1)
+  if (effectiveIndex < 0) {
+    // shifted off the left side of the table: No Effect
+    return {index: -1, label: 'left of 0'};
+  }
   return {
     index: effectiveIndex,
     label: String(rawColumns[effectiveIndex])

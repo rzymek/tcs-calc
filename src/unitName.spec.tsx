@@ -51,6 +51,17 @@ describe('unitStats', () => {
       type: 'arty'
     } satisfies UnitStats)
   })
+  it('defaults to 5 infantry steps', () => {
+    expect(unitStats(UnitDef.brand('4w.5b.5w')).steps).toBe(5);
+  })
+  it.each([
+    'abc',
+    '4w.5b',
+    '4x.5b.5w',
+    '4b.5b.5w',
+  ])('rejects invalid definition %s', def => {
+    expect(() => unitStats(UnitDef.brand(def))).toThrow();
+  })
 });
 
 

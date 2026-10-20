@@ -21,7 +21,6 @@
     "remeda": "^2.52.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx-source": "^7.29.7",
     "@preact/preset-vite": "^2.10.6",
     "@vite-pwa/assets-generator": "^2.0.0",
     "knip": "^6.42.0",
@@ -29,7 +28,6 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vite-plugin-pwa": "^2.0.0",
-    "vite-static-assets-plugin": "^3.1.1",
     "vitest": "^5.0.5"
   },
   "pnpm": {

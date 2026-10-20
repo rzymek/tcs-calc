@@ -1,7 +1,6 @@
 import {State} from "./state.ts";
-import {unitStats} from "./unitName.tsx";
 import {countSteps} from "./countSteps.tsx";
-import {infFirepower} from "./infFirepower.tsx";
+import {infFirepower, infSteps} from "./infFirepower.tsx";
 import {areaTargetStacking} from "./areaTargetStacking.tsx";
 import {unitsSpottingRange} from "./unitsSpottingRange.tsx";
 import {areaFireRange} from "./areaFireRange.tsx";
@@ -27,10 +26,7 @@ export function fireResolution(state: State) {
     }),
     otherModifiers: otherModifiers(state.attacker, state.defender, state.distance),
     spottingRange,
-    firerInfSteps: countSteps({
-      ...state.attacker,
-      units: state.attacker.units.filter(unit => unitStats(unit).type === 'inf'),
-    }),
+    firerInfSteps: infSteps(state.attacker),
     targetSteps: countSteps(state.defender),
     noLOS: isNoLOS(state, spotted),
     spotted,

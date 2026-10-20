@@ -2,7 +2,7 @@ import * as R from "remeda";
 
 const rolls = R.range(1, 7).flatMap(tens => R.range(1, 7).map(units => tens * 10 + units));
 
-function distribution(outcome: (roll: number) => string | undefined) {
+export function distribution(outcome: (roll: number) => string | undefined) {
   return R.pipe(
     rolls,
     R.map(outcome),

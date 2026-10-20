@@ -16,4 +16,7 @@ describe('findByRange', () => {
     expect(findByRange(table, 13)).toBe(6);
     expect(findByRange(table, 73)).toBe(10);
   });
+  it('throws when no range matches', () => {
+    expect(() => findByRange(rangeTable({'1-2': 0}), 3)).toThrow('No range found for 3');
+  });
 });

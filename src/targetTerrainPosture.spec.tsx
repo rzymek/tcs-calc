@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest';
-import {targetTerrainPosture} from "./targetTerrainPosture.tsx";
+import {postures, targetTerrainPosture} from "./targetTerrainPosture.tsx";
 import {UnitDef} from "./unitName.tsx";
+import {Modifier} from "./modifiers.tsx";
 
 const inf = UnitDef.brand('4w.5b.5w');
 const pointTarget = UnitDef.brand('1y.7b.2y.1.vehicle');
@@ -86,5 +87,32 @@ describe('targetTerrainPosture', () => {
       spotted: true,
       includesLowTrajectory: false,
     })).toEqual(4);
+  });
+  it('unknown terrain type', () => {
+    expect(targetTerrainPosture({
+      mods: [],
+      units: [inf],
+      stepLosses: [],
+    }, {
+      type: 'swamp',
+      name: 'x'
+    }, {
+      spotted: true,
+      includesLowTrajectory: false,
+    })).toEqual(0);
+  });
+});
+
+describe('postures', () => {
+  it.each([
+    {mods: [], expected: ['fire']},
+    {mods: ['firing'], expected: ['fire']},
+    {mods: ['dugin'], expected: ['dugin']},
+    {mods: ['moving'], expected: ['moving']},
+    {mods: ['dugin', 'firing'], expected: ['dugin', 'fire']},
+    {mods: ['moving', 'dugin'], expected: ['dugin', 'moving']},
+    {mods: ['night'], expected: ['fire']},
+  ] as { mods: Modifier[], expected: string[] }[])('$mods: $expected', ({mods, expected}) => {
+    expect(postures({mods, units: [], stepLosses: []})).toEqual(expected);
   });
 });
