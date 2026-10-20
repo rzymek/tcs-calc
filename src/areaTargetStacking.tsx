@@ -3,6 +3,7 @@ import {countSteps} from "./countSteps.tsx";
 import {findByRange} from "./findByRange.tsx";
 import {rangeTable} from "./rangeTable.tsx";
 import {includesLowTrajectory} from "./includesLowTrajectory.tsx";
+import {unitStats} from "./unitName.tsx";
 
 export const areaTargetStackingModifiers = {
   "1-2": -3,
@@ -21,7 +22,8 @@ export function areaTargetStacking(state: State, spotted: boolean): number {
     return 0;
   }
   const value = findByRange(areaTargetStackingTable, defenderSteps);
-  const possiblePenalty = state.firererType === 'arty' || (
+  const isArty = state.attacker.units.map(unitStats).some(unit => unit.type === 'arty');
+  const possiblePenalty = isArty || (
     includesLowTrajectory(state) && !spotted
   )
   return possiblePenalty ? value : Math.max(0, value);

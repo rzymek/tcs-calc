@@ -1,11 +1,10 @@
 import {isString} from "remeda";
 import {inRange} from "./inRange.ts";
-import {State} from "./state.ts";
 
 export const rawColumns = [
   0, 1, 2, 3, 4, 5, 6, '7-8', '9-10', '11-13', '14-16', '17-20', '21-25', '26-32', '33-40', '41-50', '51-64', '65-80', '81-100', '101+'
 ] as const;
-export const pColumns = [
+const pColumns = [
   [1, 4],
   [2, '7-8'],
   [3, '11-13'],
@@ -81,5 +80,3 @@ function effectiveColumn(index: number, shift: number) {
     label: String(rawColumns[effectiveIndex])
   }
 }
-
-export type FireResolutionResult = ReturnType<typeof fireTable["result"]>

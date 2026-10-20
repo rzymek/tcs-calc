@@ -1,6 +1,4 @@
 import {inRange} from "./inRange.ts";
-import {State} from "./state.ts";
-import {isDefined} from "remeda";
 
 export const moraleTable: string[][] = [
     ['No Effect', '11..53', '11..46', '11..41', '11..33', '11..25', '11..21', '11..14', '11'],
@@ -10,42 +8,6 @@ export const moraleTable: string[][] = [
     ['Surrender', '', '', '', '', '', '', '66', '65..66', '64..66', '62..66', '54..66', '46..66', '42..66'],
 ] as const;
 
-export function effectiveMorale(state: State): number {
-    let base = (state.targetMorale ?? NaN)
-        + (state.targetStepLoses ?? 0)
-        + (state.targetBnMorale ?? 0)
-    const env = state.targetEnv;
-    const fireEnv = state.firererEnv;
-    const posture = state.targetPosture;
-    const terrain = state.targetTerrain;
-    if (env.includes('arty zone')) {
-        base += +2;
-    }
-    if (env.includes('all sup/par')) {
-        base += +1;
-    }
-    if (env.includes('night')) {
-        base += +1;
-    }
-    if (posture === 'dug in') {
-        base += -2;
-    }
-    if (env.includes("P+2 in hex")) {
-        base += -1;
-    }
-    if (fireEnv.includes("cross fire")) {
-        base += +2;
-    }
-    if (isDefined(terrain) && ['partly', 'protective'].includes(terrain)) {
-        base += -1;
-    }
-    // no low
-    if (env.includes('unassigned')) {
-        base += 2;
-    }
-    return base;
-}
-
 export function morale(morale: number, roll: number) {
     const normalizedMorale = Math.max(1, Math.min(morale, 13));
     const [result] = moraleTable.find(row => inRange(row[normalizedMorale], roll)) ?? [];
@@ -53,8 +15,4 @@ export function morale(morale: number, roll: number) {
         result,
         column: normalizedMorale,
     };
-}
-
-export function calculateMorale(state: State, roll: number) {
-    return morale(effectiveMorale(state), roll);
 }

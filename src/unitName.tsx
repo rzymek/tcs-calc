@@ -29,13 +29,13 @@ export type UnitStats = {
 
 const infantrySteps = 5;
 
-export class UnitDefError extends Error {
+class UnitDefError extends Error {
   constructor(unit: UnitDef) {
     super(`Unit definition [${unit}] does not match <fire><w|y>.<range><b|w>.<morale|defense><w|b|y>[.<steps>w]`);
   }
 }
 
-export class UnitDefColorError extends Error {
+class UnitDefColorError extends Error {
   constructor(color: string, typeByColor: {}) {
     super(`[${color}] in not one of ${Object.keys(typeByColor)}`);
   }
