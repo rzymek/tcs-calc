@@ -3,27 +3,27 @@ import {wide} from "./mainLayoutCell.tsx";
 import {size} from "./size.tsx";
 import {bgColor} from "./bgColor.tsx";
 
-const paralyzed = {mod: 'paralyzed', src: import.meta.resolve('./images/markers/paralyzed.png')} as const;
+const paralyzed = {mod: 'paralyzed', src: new URL('./images/markers/paralyzed.png', import.meta.url).href} as const;
 const defenderModifiers = [
-  {mod: 'night', src: import.meta.resolve('./images/markers/night.svg')},
-  {mod: 'twilight', src: import.meta.resolve('./images/markers/twilight.svg')},
-  {mod: 'illum', src: import.meta.resolve('./images/markers/illum.png')},
-  {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
-  {mod: 'smoke', src: import.meta.resolve('./images/markers/smoke.png')},
-  {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
-  {mod: 'dugin', src: import.meta.resolve('./images/markers/dugin.png')},
-  {mod: 'unassigned', src: import.meta.resolve('./images/markers/unassigned.svg')},
-  {mod: 'road-moving', src: import.meta.resolve('./images/markers/road-moving.png')},
-  {mod: 'firing', src: import.meta.resolve('./images/markers/firing.png')},
-  {mod: 'moving', src: import.meta.resolve('./images/markers/moving.svg')},
-  {mod: 'crossfire', src: import.meta.resolve('./images/markers/crossfire.png')},
+  {mod: 'night', src: new URL('./images/markers/night.svg', import.meta.url).href},
+  {mod: 'twilight', src: new URL('./images/markers/twilight.svg', import.meta.url).href},
+  {mod: 'illum', src: new URL('./images/markers/illum.png', import.meta.url).href},
+  {mod: 'suppressed', src: new URL('./images/markers/suppressed.png', import.meta.url).href, next: paralyzed},
+  {mod: 'smoke', src: new URL('./images/markers/smoke.png', import.meta.url).href},
+  {mod: 'arty', src: new URL('./images/markers/arty.png', import.meta.url).href},
+  {mod: 'dugin', src: new URL('./images/markers/dugin.png', import.meta.url).href},
+  {mod: 'unassigned', src: new URL('./images/markers/unassigned.svg', import.meta.url).href},
+  {mod: 'road-moving', src: new URL('./images/markers/road-moving.png', import.meta.url).href},
+  {mod: 'firing', src: new URL('./images/markers/firing.png', import.meta.url).href},
+  {mod: 'moving', src: new URL('./images/markers/moving.svg', import.meta.url).href},
+  {mod: 'crossfire', src: new URL('./images/markers/crossfire.png', import.meta.url).href},
 ] as const;
 
 const attackerModifiers = [
-  {mod: 'suppressed', src: import.meta.resolve('./images/markers/suppressed.png'), next: paralyzed},
-  {mod: 'arty', src: import.meta.resolve('./images/markers/arty.png')},
-  {mod: 'dugin', src: import.meta.resolve('./images/markers/dugin.png')},
-  {mod: 'smoke', src: import.meta.resolve('./images/markers/smoke.png')},
+  {mod: 'suppressed', src: new URL('./images/markers/suppressed.png', import.meta.url).href, next: paralyzed},
+  {mod: 'arty', src: new URL('./images/markers/arty.png', import.meta.url).href},
+  {mod: 'dugin', src: new URL('./images/markers/dugin.png', import.meta.url).href},
+  {mod: 'smoke', src: new URL('./images/markers/smoke.png', import.meta.url).href},
 ] as const;
 
 export type Modifier = (typeof defenderModifiers | typeof attackerModifiers)[number]['mod'] | typeof paralyzed['mod'];

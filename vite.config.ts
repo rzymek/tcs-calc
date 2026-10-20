@@ -6,6 +6,9 @@ import staticAssetsPlugin from 'vite-static-assets-plugin';
 // https://vitejs.dev/config/
 export default defineConfig({
     base: '/tcs-calc',
+    build: {
+        assetsInlineLimit: 8 * 1024,
+    },
     test: {
         environment: "node",
     },

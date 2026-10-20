@@ -4,13 +4,13 @@ import {bgColor} from "./bgColor.tsx";
 import {size} from "./size.tsx";
 import {UnitDef, unitName} from "./unitName.tsx";
 
-const brit = import.meta.glob<string>(`./images/units/Brit/*.png`);
-const arg = import.meta.glob<string>(`./images/units/Arg/*.png`);
-export const steps = import.meta.glob<string>(`./images/steps/*.png`);
+const brit = import.meta.glob<string>(`./images/units/Brit/*.png`, {eager: true, query: '?url', import: 'default'});
+const arg = import.meta.glob<string>(`./images/units/Arg/*.png`, {eager: true, query: '?url', import: 'default'});
+export const steps = import.meta.glob<string>(`./images/steps/*.png`, {eager: true, query: '?url', import: 'default'});
 type UnitImages = typeof brit;
 
 const urlByName: Record<string, string> = Object.fromEntries(
-  Object.keys({...brit, ...arg, ...steps}).map(path => [unitName(path), import.meta.resolve(path)])
+  Object.entries({...brit, ...arg, ...steps}).map(([path, url]) => [unitName(path), url])
 );
 
 export function unitUrl(name: UnitDef) {
